@@ -1,9 +1,28 @@
-# Resolve MDM Copilot
+# Resolve — AI-Augmented MDM Steward Copilot
 
-AI-Augmented Master Data Management Steward Copilot for Healthcare.
+An open-source AI product that helps healthcare data stewards resolve member identity matches faster, with explainable LLM rationale and HIPAA-aware retrieval.
 
-An intelligent copilot that assists MDM data stewards in resolving duplicate records, validating data quality, and maintaining golden records across healthcare master data domains (Provider, Member, Facility, Organization).
+**Status:** Day 1 — foundation setup. Architecture, PRD, and demo coming over the next 90 days.
 
-## Status
+## Stack
 
-Under active development.
+- PostgreSQL on Supabase + pgvector
+
+- Voyage AI (embeddings)
+
+- LangChain + LangGraph (orchestration, Week 3+)
+
+- Anthropic Claude (LLM, Week 3+)
+
+- Ragas (RAG evaluation)
+
+- LangSmith (observability)
+
+- Streamlit (UI, Week 4+)
+
+## Roadmap
+
+See `/docs/PRD.md` (coming Day 4).
+
+Built in public — follow along on [LinkedIn](#).
+
