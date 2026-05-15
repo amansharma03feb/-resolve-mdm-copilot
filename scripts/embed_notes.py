@@ -1,27 +1,27 @@
-"""Embed steward notes using OpenAI text-embedding-3-small and store in pgvector."""
+"""Embed steward notes using Voyage AI and store in pgvector."""
 
 import os
 import sys
 import psycopg2
-from openai import OpenAI
+import voyageai
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DB_URL = os.getenv("DATABASE_URL")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-MODEL = "text-embedding-3-small"
+VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
+MODEL = os.getenv("EMBEDDING_MODEL", "voyage-3")
 
-if not DB_URL or not OPENAI_API_KEY:
-    print("ERROR: Set DATABASE_URL and OPENAI_API_KEY in .env")
+if not DB_URL or not VOYAGE_API_KEY:
+    print("ERROR: Set DATABASE_URL and VOYAGE_API_KEY in .env")
     sys.exit(1)
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+vo = voyageai.Client(api_key=VOYAGE_API_KEY)
 
 
 def get_embedding(text: str) -> list[float]:
-    resp = client.embeddings.create(input=text, model=MODEL)
-    return resp.data[0].embedding
+    result = vo.embed([text], model=MODEL, input_type="document")
+    return result.embeddings[0]
 
 
 def main():

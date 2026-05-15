@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS staging.member_notes (
     action          VARCHAR(20) NOT NULL,
     note            TEXT NOT NULL,
     confidence      NUMERIC(4,2),
-    embedding       vector(1536),
+    embedding       vector(1024),
     created_at      TIMESTAMPTZ DEFAULT now()
 );
 
