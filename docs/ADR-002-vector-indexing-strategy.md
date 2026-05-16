@@ -8,22 +8,29 @@
 
 Resolve stores 1024-dim Voyage AI embeddings in pgvector for semantic similarity search over steward notes and (future) patient record embeddings. We need an indexing strategy that balances query latency, build cost, recall accuracy, and Supabase free-tier constraints (32 MB maintenance_work_mem).
 
-## Options Considered
+## Alternatives Considered
 
 ### 1. No Index (Sequential Scan)
-- Scans every row, computes distance for each
-- No build cost, perfect recall
-- O(n) query time — unacceptable beyond ~10K rows
+- Scans every row, computes cosine distance for each
+- Perfect recall (no approximation), zero build cost
+- **Rejected:** O(n) query time — 239 ms at 10K rows. Unacceptable at 50K+ rows for real-time steward UX. Would mean multi-second latency on every "find similar notes" query.
 
-### 2. IVFFlat
-- Partitions vectors into Voronoi cells, searches nearby cells
-- Requires loading all vectors into memory at build time
-- **Rejected:** 10K rows x 1024 dims requires ~45 MB, exceeding Supabase free tier's 32 MB maintenance_work_mem limit
+### 2. IVFFlat (Inverted File with Flat Quantization)
+- Partitions vectors into Voronoi cells using k-means clustering, then searches only nearby cells at query time
+- Generally lower disk usage than HNSW
+- **Rejected:** Requires loading ALL vectors into memory during index build to compute centroids. At 10K × 1024 dims × 4 bytes = ~40 MB, this exceeds Supabase free tier's hard 32 MB `maintenance_work_mem` cap. Tested with lists=100, 50, and 10 — all failed with the same memory error. The bottleneck is vector loading, not cluster count.
+- **When to revisit:** On a paid Supabase tier with higher memory limits, IVFFlat would likely work and use less disk than HNSW.
 
-### 3. HNSW (Hierarchical Navigable Small World)
+### 3. Dedicated Vector Database (Pinecone / Weaviate / Qdrant)
+- Purpose-built for vector search with managed scaling
+- **Rejected:** Adds a separate service to sync with Supabase. Our vectors need to be queried alongside relational data (patient records, steward notes, audit logs). pgvector keeps everything co-located — no ETL pipeline between systems. At our scale (<100K vectors), pgvector matches dedicated vector DB performance.
+- **When to revisit:** If we exceed 1M embeddings or need cross-region replication.
+
+### 4. HNSW (Hierarchical Navigable Small World) ← CHOSEN
 - Graph-based approximate nearest neighbor search
-- Builds incrementally (row by row) — no memory spike
-- Tunable via m (graph connectivity) and ef_construction/ef_search
+- Builds incrementally (one vector at a time) — no memory spike
+- Tunable via `m` (graph connectivity) and `ef_construction` / `ef_search`
+- Sub-millisecond queries at 10K scale
 
 ## Benchmark Results (10K rows, 1024 dims, Supabase free tier)
 

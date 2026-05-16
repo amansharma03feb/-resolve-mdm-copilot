@@ -1,6 +1,22 @@
 # Resolve — Product Requirements Document (PRD)
 
-**Project:** Resolve — AI-Augmented MDM Steward Copilot for Healthcare **Author:** Aman **Status:** v0.2 — Draft **Last updated:** Day 4
+**Project:** Resolve — AI-Augmented MDM Steward Copilot for Healthcare **Author:** Aman Sharma **Status:** v0.3 — Updated with build learnings **Last updated:** 2026-05-17
+
+---
+
+## Version History
+
+| Version | Date | What Changed | Scope Change |
+|---------|------|-------------|--------------|
+| v0.1 | 2026-05-12 | Initial PRD — problem statement, persona, success metrics, 6 core features, eval plan, risk register | Baseline scope defined |
+| v0.2 | 2026-05-13 | Added competitive landscape, refined MVP slice, added open questions | No scope change — clarified positioning |
+| v0.3 | 2026-05-17 | Added Section 11 (build learnings). IVFFlat dropped for HNSW. Voyage AI replaced OpenAI for embeddings. ZIP coverage gap documented. ADR-001 and ADR-002 referenced. | **Scope narrowed:** removed IVFFlat as indexing option. **Tech change:** Voyage AI replaces OpenAI embeddings. No feature scope creep. |
+
+### Scope Tracking Rules
+- Every PRD update gets a version bump and a row in this table
+- "Scope Change" column must say one of: `No scope change`, `Scope narrowed`, `Scope expanded (justified)`, or `Scope creep (flag)`
+- If a feature is added that wasn't in v0.1, it must have a justification or it's flagged as creep
+- At project end, this table feeds directly into the scope creep analysis spreadsheet
 
 Companion research and domain context: `mdm-domain-notes.md`
 
@@ -185,6 +201,37 @@ These are questions I can't yet answer from existing experience or public resear
 3. **PHI redaction completeness.** Standard NER catches names, addresses, dates — but how do we handle PHI that hides in *free-text* steward notes (e.g., "patient mentioned divorce in note from June")? What threshold of redaction is enough for regulators?  
 4. **Auto-merge appetite.** What confidence threshold are healthcare insurers actually willing to set for auto-resolution? Conversations with stewardship leads suggest 95% is a starting point — but in practice many may insist on 99% in v1.  
 5. **Failure mode communication.** When the LLM is uncertain, what's the right UX — refuse to recommend, show low confidence, or escalate to a senior steward? Each carries different operational implications.
+
+---
+
+---
+
+## 11. Lessons Learned from Build (Days 1–3)
+
+Findings that changed or validated assumptions in this PRD:
+
+### Validated
+
+1. **pgvector handles our scale.** 50K patient records + embedded steward notes in a single Supabase PostgreSQL instance — no performance issues. Co-locating vectors with relational data eliminates the need for a separate vector DB at this scale.
+
+2. **Semantic search over steward notes works.** Voyage AI embeddings (1024 dims) + pgvector HNSW index delivers sub-millisecond similarity queries. A steward searching "SSN transposition" correctly retrieves notes about SSN data entry errors even when those exact words aren't used.
+
+3. **Synthea provides realistic-enough test data.** 50K synthetic patients with names, DOBs, SSNs, and addresses — sufficient for building and testing the matching pipeline. Caveat: all records are Massachusetts-only and names have numeric suffixes (stripped during normalization).
+
+### Changed
+
+4. **IVFFlat is not viable on Supabase free tier.** Original plan assumed IVFFlat for vector indexing. Benchmarking showed it requires ~45 MB memory at build time, exceeding the 32 MB `maintenance_work_mem` cap. **Decision: use HNSW exclusively** (see ADR-002). HNSW builds incrementally and delivered 370x speedup over sequential scan.
+
+5. **Voyage AI over OpenAI for embeddings.** Switched from OpenAI text-embedding-3-small (1536 dims) to Voyage AI voyage-3 (1024 dims). Reasons: 200M free tokens, retrieval-optimized training, 33% fewer dimensions = less storage and faster search. Trade-off: 3 RPM rate limit on free tier (mitigated with retry logic and 21s delays).
+
+6. **ZIP coverage is only 53%.** Synthea data has NULL zip5 for nearly half of records. This means ZIP-based blocking alone is insufficient — the matching engine must use fallback blocking keys (name_soundex + DOB, SSN_last4 + DOB) for the remaining 47%.
+
+7. **Name normalization needs Synthea-specific handling.** Synthea appends random digits to names ("JACINTO644"). These must be stripped before any matching — added `REGEXP_REPLACE` to the staging transform. In production, this step would be replaced with source-system-specific cleaning rules.
+
+### Architecture Decisions Documented
+
+- **ADR-001:** Open-source stack rationale — why Supabase + Voyage AI + Claude + LangChain over commercial alternatives
+- **ADR-002:** pgvector indexing strategy — HNSW chosen over IVFFlat based on benchmark evidence
 
 ---
 
