@@ -18,12 +18,10 @@ CREATE TABLE staging.vector_benchmark (
 INSERT INTO staging.vector_benchmark (payload, embedding)
 SELECT
     'synthetic_note_' || i,
-    (
-        SELECT array_to_string(ARRAY(
-            SELECT ROUND((random() * 2 - 1)::numeric, 6)
-            FROM generate_series(1, 1024)
-        ), ',')
-    )::vector
+    ('[' || array_to_string(ARRAY(
+        SELECT ROUND((random() * 2 - 1)::numeric, 6)
+        FROM generate_series(1, 1024)
+    ), ',') || ']')::vector
 FROM generate_series(1, 10000) AS i;
 
 -- Verify
