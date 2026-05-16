@@ -27,11 +27,42 @@ Resolve stores 1024-dim Voyage AI embeddings in pgvector for semantic similarity
 
 ## Benchmark Results (10K rows, 1024 dims, Supabase free tier)
 
-| Method | Execution Time | Notes |
-|--------|---------------|-------|
-| No Index | 239.15 ms | Full sequential scan |
-| IVFFlat | FAILED | Exceeded 32 MB memory limit |
-| HNSW (m=16, ef=64) | 0.646 ms | 370x faster than seq scan |
+**Test setup:** 10,000 rows with random 1024-dim vectors in `staging.vector_benchmark`. Query: find 5 nearest neighbours to row id=1.
+
+| Method | Execution Time | Speedup | Status |
+|--------|---------------|---------|--------|
+| No Index (seq scan) | 239.15 ms | baseline | Scanned all 9,999 rows |
+| IVFFlat (lists=100) | FAILED | — | Needs ~45 MB, limit is 32 MB |
+| IVFFlat (lists=50) | FAILED | — | Still exceeds memory limit |
+| IVFFlat (lists=10) | FAILED | — | Still exceeds memory limit |
+| **HNSW (m=16, ef=64)** | **0.646 ms** | **370x** | Index scan, 5 rows returned |
+
+**Why IVFFlat fails:** IVFFlat must load ALL vectors into memory at build time to compute cluster centroids. 10K × 1024 dims × 4 bytes = ~40 MB, which exceeds Supabase free tier's 32 MB `maintenance_work_mem` cap. Reducing `lists` does not help because the memory bottleneck is loading the vectors, not the number of clusters.
+
+**Why HNSW works:** HNSW builds its graph incrementally (one vector at a time), so it never needs all vectors in memory simultaneously.
+
+### EXPLAIN ANALYZE Details
+
+**No Index (seq scan):**
+- Sort Method: top-N heapsort, Memory: 25kB
+- Seq Scan on vector_benchmark: actual time 0.257..231.395 ms, rows=9,999
+- Planning Time: 0.438 ms
+- **Execution Time: 239.150 ms**
+
+**HNSW:**
+- Index Scan using idx_bench_hnsw: actual time 0.489..0.524 ms, rows=5
+- Planning Time: 0.895 ms
+- **Execution Time: 0.646 ms**
+
+### Index Size
+
+| Index | Size |
+|-------|------|
+| Primary key (B-tree) | 240 KB |
+| HNSW (m=16, ef_construction=64) | 21 MB |
+| Per-vector overhead | ~2.1 KB |
+
+Projected sizes: 1K notes → ~2 MB, 10K notes → ~21 MB, 50K notes → ~105 MB.
 
 ## Decision
 
