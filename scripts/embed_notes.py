@@ -2,6 +2,7 @@
 
 import os
 import sys
+import time
 import psycopg2
 import voyageai
 from dotenv import load_dotenv
@@ -19,9 +20,18 @@ if not DB_URL or not VOYAGE_API_KEY:
 vo = voyageai.Client(api_key=VOYAGE_API_KEY)
 
 
-def get_embedding(text: str) -> list[float]:
-    result = vo.embed([text], model=MODEL, input_type="document")
-    return result.embeddings[0]
+def get_embedding(text: str, retries: int = 5) -> list[float]:
+    for attempt in range(retries):
+        try:
+            result = vo.embed([text], model=MODEL, input_type="document")
+            return result.embeddings[0]
+        except Exception as e:
+            if attempt < retries - 1:
+                wait = 30 if "rate" in str(e).lower() else 2 ** (attempt + 1)
+                print(f"    retry in {wait}s (attempt {attempt+1}/{retries})")
+                time.sleep(wait)
+            else:
+                raise
 
 
 def main():
@@ -43,9 +53,10 @@ def main():
             "UPDATE staging.member_notes SET embedding = %s WHERE note_id = %s",
             (str(vec), note_id),
         )
+        conn.commit()
         print(f"  note_id={note_id} embedded ({len(vec)} dims)")
+        time.sleep(21)
 
-    conn.commit()
     cur.close()
     conn.close()
     print("Done — all notes embedded.")
