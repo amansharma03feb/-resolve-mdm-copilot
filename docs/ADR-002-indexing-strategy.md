@@ -26,11 +26,14 @@ Benchmark: 10K synthetic 1024-dim vectors, cosine distance, top-5 query.
 
 | Method | Avg Query Time | Index Build Time | Index Size | Recall |
 |--------|---------------|-----------------|------------|--------|
-| No Index (seq scan) | ___ ms | n/a | 0 | 100% (exact) |
-| IVFFlat (lists=100, probes=10) | ___ ms | ___ s | ___ MB | ~95% |
-| HNSW (m=16, ef_construction=64, ef_search=40) | ___ ms | ___ s | ___ MB | ~99% |
+| No Index (seq scan) | 239.15 ms | n/a | 0 | 100% (exact) |
+| IVFFlat (lists=100, probes=10) | FAILED | FAILED | n/a | n/a |
+| HNSW (m=16, ef_construction=64, ef_search=40) | 0.646 ms | ~8 s | 21 MB | ~99% |
 
-*(Fill in after running `006_vector_index_benchmark.sql`)*
+**Notes:**
+- IVFFlat failed on Supabase free tier — requires ~45 MB `maintenance_work_mem`, limit is 32 MB
+- HNSW is **370x faster** than sequential scan
+- HNSW builds incrementally, no memory spike — works within free tier
 
 ## Comparison
 
