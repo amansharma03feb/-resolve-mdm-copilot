@@ -29,6 +29,11 @@ An open-source AI product that helps healthcare data stewards resolve member ide
 
 ## Architecture
 
+![Architecture Diagram](docs/diagrams/architecture-v1-MDM.PNG)
+
+<details>
+<summary>View as Mermaid (text-based)</summary>
+
 ```mermaid
 graph TB
     subgraph UI["🖥️ Streamlit UI — Steward Dashboard"]
@@ -111,6 +116,8 @@ graph TB
     style DATA fill:#34495E,color:#fff
     style EXT fill:#95A5A6,color:#fff
 ```
+
+</details>
 
 ## Roadmap
 
