@@ -86,27 +86,27 @@ SELECT
     END AS score_address,
 
     -- Weighted composite: name 30% + DOB 25% + SSN 30% + address 15%
-    ROUND(
+    ROUND((
         0.30 * COALESCE(similarity(a.name_normalized, b.name_normalized), 0)
-      + 0.25 * (CASE WHEN a.date_of_birth = b.date_of_birth THEN 1.000 ELSE 0.000 END)
-      + 0.30 * (CASE WHEN a.ssn_last4 IS NOT NULL AND b.ssn_last4 IS NOT NULL AND a.ssn_last4 = b.ssn_last4 THEN 1.000 ELSE 0.000 END)
-      + 0.15 * (CASE WHEN a.address_normalized IS NOT NULL AND b.address_normalized IS NOT NULL THEN COALESCE(similarity(a.address_normalized, b.address_normalized), 0) ELSE 0.000 END)
-    , 3) AS composite_score,
+      + 0.25 * (CASE WHEN a.date_of_birth = b.date_of_birth THEN 1.0 ELSE 0.0 END)
+      + 0.30 * (CASE WHEN a.ssn_last4 IS NOT NULL AND b.ssn_last4 IS NOT NULL AND a.ssn_last4 = b.ssn_last4 THEN 1.0 ELSE 0.0 END)
+      + 0.15 * (CASE WHEN a.address_normalized IS NOT NULL AND b.address_normalized IS NOT NULL THEN COALESCE(similarity(a.address_normalized, b.address_normalized), 0) ELSE 0.0 END)
+    )::numeric, 3) AS composite_score,
 
     -- Tier
     CASE
-        WHEN ROUND(
+        WHEN (
             0.30 * COALESCE(similarity(a.name_normalized, b.name_normalized), 0)
-          + 0.25 * (CASE WHEN a.date_of_birth = b.date_of_birth THEN 1.000 ELSE 0.000 END)
-          + 0.30 * (CASE WHEN a.ssn_last4 IS NOT NULL AND b.ssn_last4 IS NOT NULL AND a.ssn_last4 = b.ssn_last4 THEN 1.000 ELSE 0.000 END)
-          + 0.15 * (CASE WHEN a.address_normalized IS NOT NULL AND b.address_normalized IS NOT NULL THEN COALESCE(similarity(a.address_normalized, b.address_normalized), 0) ELSE 0.000 END)
-        , 3) >= 0.950 THEN 'AUTO_MERGE'
-        WHEN ROUND(
+          + 0.25 * (CASE WHEN a.date_of_birth = b.date_of_birth THEN 1.0 ELSE 0.0 END)
+          + 0.30 * (CASE WHEN a.ssn_last4 IS NOT NULL AND b.ssn_last4 IS NOT NULL AND a.ssn_last4 = b.ssn_last4 THEN 1.0 ELSE 0.0 END)
+          + 0.15 * (CASE WHEN a.address_normalized IS NOT NULL AND b.address_normalized IS NOT NULL THEN COALESCE(similarity(a.address_normalized, b.address_normalized), 0) ELSE 0.0 END)
+        ) >= 0.950 THEN 'AUTO_MERGE'
+        WHEN (
             0.30 * COALESCE(similarity(a.name_normalized, b.name_normalized), 0)
-          + 0.25 * (CASE WHEN a.date_of_birth = b.date_of_birth THEN 1.000 ELSE 0.000 END)
-          + 0.30 * (CASE WHEN a.ssn_last4 IS NOT NULL AND b.ssn_last4 IS NOT NULL AND a.ssn_last4 = b.ssn_last4 THEN 1.000 ELSE 0.000 END)
-          + 0.15 * (CASE WHEN a.address_normalized IS NOT NULL AND b.address_normalized IS NOT NULL THEN COALESCE(similarity(a.address_normalized, b.address_normalized), 0) ELSE 0.000 END)
-        , 3) >= 0.600 THEN 'STEWARD_REVIEW'
+          + 0.25 * (CASE WHEN a.date_of_birth = b.date_of_birth THEN 1.0 ELSE 0.0 END)
+          + 0.30 * (CASE WHEN a.ssn_last4 IS NOT NULL AND b.ssn_last4 IS NOT NULL AND a.ssn_last4 = b.ssn_last4 THEN 1.0 ELSE 0.0 END)
+          + 0.15 * (CASE WHEN a.address_normalized IS NOT NULL AND b.address_normalized IS NOT NULL THEN COALESCE(similarity(a.address_normalized, b.address_normalized), 0) ELSE 0.0 END)
+        ) >= 0.600 THEN 'STEWARD_REVIEW'
         ELSE 'SEPARATE'
     END AS tier
 
