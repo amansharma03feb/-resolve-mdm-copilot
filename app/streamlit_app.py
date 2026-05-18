@@ -19,45 +19,63 @@ st.markdown(
     """
     <style>
     /* Red accent bar at top */
-    .stApp > header + div::before {
+    .stApp::before {
         content: "";
         display: block;
+        width: 100%;
         height: 4px;
         background: linear-gradient(90deg, #dc3545, #ff6b6b, #dc3545);
-        margin-bottom: 0;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 9999;
     }
 
-    /* Metric cards */
+    /* Metric cards — dark mode aware */
     [data-testid="stMetric"] {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 12px 16px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        background: var(--background-color, #f8f9fa);
+        border: 1px solid rgba(128, 128, 128, 0.2);
+        border-radius: 10px;
+        padding: 16px 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        text-align: center;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
     [data-testid="stMetric"] label {
-        color: #6c757d !important;
-        font-size: 0.75rem !important;
+        font-size: 0.7rem !important;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
+        opacity: 0.7;
     }
     [data-testid="stMetric"] [data-testid="stMetricValue"] {
-        font-size: 1.5rem !important;
+        font-size: 1.6rem !important;
         font-weight: 700 !important;
-        color: #212529 !important;
+    }
+    [data-testid="stMetric"] [data-testid="stMetricDelta"] {
+        font-size: 0.75rem !important;
+        opacity: 0.8;
     }
 
-    /* Tab styling */
+    /* Equal-width metric columns */
+    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+    }
+
+    /* Tab styling — dark mode aware */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 0;
-        background: #f8f9fa;
-        border-radius: 8px;
+        gap: 4px;
+        background: rgba(128, 128, 128, 0.1);
+        border-radius: 10px;
         padding: 4px;
     }
     .stTabs [data-baseweb="tab"] {
-        border-radius: 6px;
+        border-radius: 8px;
         font-weight: 600;
-        padding: 8px 20px;
+        padding: 10px 24px;
     }
     .stTabs [aria-selected="true"] {
         background: #dc3545 !important;
@@ -70,28 +88,24 @@ st.markdown(
         font-weight: 600;
     }
 
-    /* Score badge colors */
-    .score-high { color: #198754; font-weight: 700; }
-    .score-mid { color: #fd7e14; font-weight: 700; }
-    .score-low { color: #dc3545; font-weight: 700; }
-
     /* Pagination */
     .pagination-info {
         text-align: center;
-        color: #6c757d;
         padding: 8px 0;
         font-size: 0.85rem;
+        opacity: 0.7;
     }
 
     /* Footer */
     .footer {
         text-align: center;
-        color: #adb5bd;
         font-size: 0.75rem;
         padding: 16px 0 8px;
-        border-top: 1px solid #e9ecef;
+        border-top: 1px solid rgba(128, 128, 128, 0.2);
         margin-top: 24px;
+        opacity: 0.6;
     }
+    .footer a { opacity: 0.8; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -188,15 +202,6 @@ def get_states():
     states = [r[0] for r in cur.fetchall()]
     cur.close()
     return ["All"] + states
-
-
-# ── Score formatting ────────────────────────────────────────
-def score_badge(score):
-    if score >= 0.9:
-        return f'<span class="score-high">{score:.3f}</span>'
-    if score >= 0.7:
-        return f'<span class="score-mid">{score:.3f}</span>'
-    return f'<span class="score-low">{score:.3f}</span>'
 
 
 # ── Constants ───────────────────────────────────────────────
