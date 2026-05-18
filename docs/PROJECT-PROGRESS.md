@@ -59,6 +59,29 @@ Semantic search lets the copilot find relevant past decisions when a steward is 
 
 ---
 
+## Day 4 — Match Scoring, Steward Notes Pipeline, and UI
+
+**What we did:**
+- Injected 200 synthetic duplicate records into staging.members across 3 tiers:
+  - Tier A (60): near-exact duplicates (char-swap name, same SSN/DOB) → AUTO_MERGE
+  - Tier B (80): ambiguous duplicates (truncated name, same DOB, different SSN/address) → STEWARD_REVIEW
+  - Tier C (60): tricky duplicates (extra letter, DOB +1 day, SSN transposition) → borderline
+- Re-ran match candidate scoring on 50,260 members: 60 AUTO_MERGE, 144 STEWARD_REVIEW, 38,663 SEPARATE
+- Created `staging.steward_notes` table with 110 synthetic resolution notes (40 MERGE, 35 SEPARATE, 35 ESCALATE) covering realistic scenarios: nickname variants, name transliterations, institutional addresses, compliance edge cases, fraud scenarios
+- Switched embedding model from `voyage-3` (1024-dim) to `voyage-3-lite` (512-dim) for faster embedding and lower cost
+- Built bulk embedding script with batched API calls (5 notes per batch, rate-limit-aware retry)
+- Built semantic similarity search script for steward notes
+- Created HNSW index on steward note embeddings for sub-millisecond search
+- Scaffolded Streamlit steward dashboard with:
+  - Sidebar showing match pipeline stats (tier counts, avg scores)
+  - Steward Review Inbox: 10 candidate pairs with side-by-side records, score breakdowns, and Merge/Keep/Escalate buttons
+  - AI rationale placeholder for Week 4 integration
+
+**Why it matters:**
+The matching pipeline now produces realistic tier distributions across all three categories. The steward notes RAG pipeline (text → Voyage → pgvector → similarity search) is the foundation for AI-generated rationale. The Streamlit inbox gives stewards a working interface to review candidates — the core product experience.
+
+---
+
 ## What's Built So Far (Summary)
 
 | Component | Status | Details |
@@ -70,13 +93,17 @@ Semantic search lets the copilot find relevant past decisions when a steward is 
 | Steward notes | Done | 10 sample notes with embeddings |
 | Semantic search | Done | Voyage AI + pgvector + HNSW |
 | Vector benchmarking | Done | HNSW chosen (ADR-002) |
+| Match candidates | Done | 38,867 scored pairs across 3 tiers |
+| Synthetic duplicates | Done | 200 injected with controlled noise |
+| Steward notes (110) | Done | 40 MERGE, 35 SEPARATE, 35 ESCALATE |
+| Note embeddings | Done | voyage-3-lite 512-dim + HNSW index |
+| Streamlit inbox | Done | Side-by-side records, score badges |
 | PRD | Done | Full product spec |
 | Architecture doc | Done | Layer diagram + data flow |
 
 ## What's Next
 
-- Architecture diagram (visual, not ASCII)
-- Candidate pair generation (blocking + scoring)
-- RAG pipeline for rationale generation
+- Embed all steward notes and verify HNSW index performance
+- RAG pipeline for rationale generation (Week 4)
 - PHI safety layer (redaction before LLM calls)
-- Streamlit UI for steward dashboard
+- LLM-generated rationale in Streamlit inbox

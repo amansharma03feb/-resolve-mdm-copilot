@@ -13,5 +13,5 @@ ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY", "")
 
 AUTO_MERGE_THRESHOLD = float(os.getenv("AUTO_MERGE_THRESHOLD", "0.95"))
-EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "voyage-3")
+EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "voyage-3-lite")
 LLM_MODEL = os.getenv("LLM_MODEL", "claude-sonnet-4-6")
