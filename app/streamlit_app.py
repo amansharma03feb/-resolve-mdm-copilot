@@ -1,4 +1,4 @@
-"""Resolve MDM Copilot — Steward Dashboard v3"""
+"""Resolve MDM Copilot — Steward Dashboard v4"""
 
 import math
 import os
@@ -12,63 +12,55 @@ load_dotenv()
 
 DB_URL = os.getenv("DATABASE_URL")
 
-# ── Custom CSS ──────────────────────────────────────────────
+# ── Page config + CSS ───────────────────────────────────────
 st.set_page_config(page_title="Resolve MDM Copilot", page_icon="🔗", layout="wide")
 
 st.markdown(
     """
     <style>
-    /* Red accent bar at top */
+    /* Red accent bar — fixed top */
     .stApp::before {
         content: "";
-        display: block;
-        width: 100%;
-        height: 4px;
-        background: linear-gradient(90deg, #dc3545, #ff6b6b, #dc3545);
-        position: fixed;
-        top: 0;
-        left: 0;
+        position: fixed; top: 0; left: 0;
+        width: 100%; height: 4px;
+        background: linear-gradient(90deg, #dc3545 0%, #ff6b6b 50%, #dc3545 100%);
         z-index: 9999;
     }
 
-    /* Metric cards — dark mode aware */
-    [data-testid="stMetric"] {
-        background: var(--background-color, #f8f9fa);
-        border: 1px solid rgba(128, 128, 128, 0.2);
+    /* Stat cards — transparent, inherit theme colors */
+    .stat-card {
+        border: 1px solid rgba(128,128,128,0.25);
         border-radius: 10px;
-        padding: 16px 20px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        padding: 18px 12px 14px;
         text-align: center;
-        min-height: 100px;
+        min-height: 110px;
         display: flex;
         flex-direction: column;
         justify-content: center;
+        align-items: center;
     }
-    [data-testid="stMetric"] label {
-        font-size: 0.7rem !important;
+    .stat-label {
+        font-size: 0.7rem;
         text-transform: uppercase;
-        letter-spacing: 0.8px;
-        opacity: 0.7;
+        letter-spacing: 1px;
+        opacity: 0.6;
+        margin-bottom: 6px;
     }
-    [data-testid="stMetric"] [data-testid="stMetricValue"] {
-        font-size: 1.6rem !important;
-        font-weight: 700 !important;
+    .stat-value {
+        font-size: 1.8rem;
+        font-weight: 800;
+        line-height: 1.1;
     }
-    [data-testid="stMetric"] [data-testid="stMetricDelta"] {
-        font-size: 0.75rem !important;
-        opacity: 0.8;
-    }
-
-    /* Equal-width metric columns */
-    [data-testid="stHorizontalBlock"] > [data-testid="stColumn"] {
-        flex: 1 1 0 !important;
-        min-width: 0 !important;
+    .stat-delta {
+        font-size: 0.75rem;
+        opacity: 0.5;
+        margin-top: 4px;
     }
 
-    /* Tab styling — dark mode aware */
+    /* Tab styling */
     .stTabs [data-baseweb="tab-list"] {
         gap: 4px;
-        background: rgba(128, 128, 128, 0.1);
+        background: rgba(128,128,128,0.08);
         border-radius: 10px;
         padding: 4px;
     }
@@ -82,30 +74,23 @@ st.markdown(
         color: white !important;
     }
 
-    /* Expander headers */
-    .streamlit-expanderHeader {
-        font-size: 0.9rem !important;
-        font-weight: 600;
-    }
-
     /* Pagination */
-    .pagination-info {
+    .page-info {
         text-align: center;
-        padding: 8px 0;
+        padding: 10px 0;
         font-size: 0.85rem;
-        opacity: 0.7;
+        opacity: 0.65;
     }
 
     /* Footer */
     .footer {
         text-align: center;
-        font-size: 0.75rem;
-        padding: 16px 0 8px;
-        border-top: 1px solid rgba(128, 128, 128, 0.2);
-        margin-top: 24px;
-        opacity: 0.6;
+        font-size: 0.72rem;
+        padding: 14px 0 6px;
+        border-top: 1px solid rgba(128,128,128,0.15);
+        margin-top: 20px;
+        opacity: 0.5;
     }
-    .footer a { opacity: 0.8; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -118,10 +103,18 @@ def get_connection():
     return psycopg2.connect(DB_URL)
 
 
-def get_stats():
+def run_query(sql, params=None):
     conn = get_connection()
     cur = conn.cursor()
-    cur.execute(
+    cur.execute(sql, params or [])
+    rows = cur.fetchall()
+    cols = [d[0] for d in cur.description] if cur.description else []
+    cur.close()
+    return rows, cols
+
+
+def get_stats():
+    rows, _ = run_query(
         """
         SELECT tier, COUNT(*), ROUND(AVG(composite_score), 3)
         FROM staging.match_candidates
@@ -131,19 +124,13 @@ def get_stats():
         END
         """
     )
-    rows = cur.fetchall()
-    cur.execute("SELECT COUNT(*) FROM staging.match_candidates")
-    total = cur.fetchone()[0]
-    cur.close()
-    return rows, total
+    total_rows, _ = run_query("SELECT COUNT(*) FROM staging.match_candidates")
+    return rows, total_rows[0][0]
 
 
 def get_candidates(tier, name_filter, state_filter, per_page, page):
-    conn = get_connection()
-    cur = conn.cursor()
-
-    query = """
-        SELECT DISTINCT ON (mc.pair_id)
+    base = """
+        SELECT
             mc.pair_id, mc.composite_score, mc.tier,
             mc.score_name, mc.score_dob, mc.score_ssn, mc.score_address,
             a.first_name AS first_a, a.last_name AS last_a,
@@ -153,7 +140,15 @@ def get_candidates(tier, name_filter, state_filter, per_page, page):
             b.first_name AS first_b, b.last_name AS last_b,
             b.date_of_birth AS dob_b, b.ssn_last4 AS ssn_b,
             b.city AS city_b, b.state AS state_b,
-            b.source_system AS src_b
+            b.source_system AS src_b,
+            ROW_NUMBER() OVER (
+                PARTITION BY
+                    LEAST(a.name_normalized, b.name_normalized),
+                    GREATEST(a.name_normalized, b.name_normalized),
+                    LEAST(COALESCE(a.ssn_last4,''), COALESCE(b.ssn_last4,'')),
+                    GREATEST(COALESCE(a.ssn_last4,''), COALESCE(b.ssn_last4,''))
+                ORDER BY mc.composite_score DESC
+            ) AS rn
         FROM staging.match_candidates mc
         JOIN staging.members a ON mc.member_id_a = a.member_id
         JOIN staging.members b ON mc.member_id_b = b.member_id
@@ -162,7 +157,7 @@ def get_candidates(tier, name_filter, state_filter, per_page, page):
     params: list = [tier]
 
     if name_filter:
-        query += """
+        base += """
             AND (LOWER(a.first_name || ' ' || a.last_name) LIKE %s
                  OR LOWER(b.first_name || ' ' || b.last_name) LIKE %s)
         """
@@ -170,38 +165,30 @@ def get_candidates(tier, name_filter, state_filter, per_page, page):
         params.extend([like, like])
 
     if state_filter and state_filter != "All":
-        query += " AND (a.state = %s OR b.state = %s)"
+        base += " AND (a.state = %s OR b.state = %s)"
         params.extend([state_filter, state_filter])
 
-    query += " ORDER BY mc.pair_id, mc.composite_score DESC"
+    wrapped = f"SELECT * FROM ({base}) sub WHERE rn = 1 ORDER BY composite_score DESC"
 
-    count_query = f"SELECT COUNT(*) FROM ({query}) sub"
-    cur.execute(count_query, params)
-    total_rows = cur.fetchone()[0]
+    count_q = f"SELECT COUNT(*) FROM ({wrapped}) cnt"
+    cnt_rows, _ = run_query(count_q, params)
+    total_rows = cnt_rows[0][0]
 
     offset = (page - 1) * per_page
-    query += " LIMIT %s OFFSET %s"
+    paged = wrapped + " LIMIT %s OFFSET %s"
     params.extend([per_page, offset])
 
-    cur.execute(query, params)
-    cols = [desc[0] for desc in cur.description]
-    rows = [dict(zip(cols, row)) for row in cur.fetchall()]
-    cur.close()
-
-    rows.sort(key=lambda r: r["composite_score"], reverse=True)
+    data_rows, data_cols = run_query(paged, params)
+    rows = [dict(zip(data_cols, r)) for r in data_rows]
     return rows, total_rows
 
 
 @st.cache_data(ttl=300)
 def get_states():
-    conn = get_connection()
-    cur = conn.cursor()
-    cur.execute(
+    rows, _ = run_query(
         "SELECT DISTINCT state FROM staging.members WHERE state IS NOT NULL ORDER BY state"
     )
-    states = [r[0] for r in cur.fetchall()]
-    cur.close()
-    return ["All"] + states
+    return ["All"] + [r[0] for r in rows]
 
 
 # ── Constants ───────────────────────────────────────────────
@@ -210,13 +197,11 @@ TIER_BUTTONS = {
     "AUTO_MERGE": [("Confirm Merge", "primary"), ("Undo Merge", "secondary"), ("Escalate", "secondary")],
     "SEPARATE": [("Force Merge", "secondary"), ("Confirm Separate", "primary"), ("Escalate", "secondary")],
 }
-
 TIER_DESC = {
     "STEWARD_REVIEW": "Ambiguous pairs needing human judgment — review evidence, then merge, separate, or escalate.",
     "AUTO_MERGE": "High-confidence matches auto-merged. Confirm or override if incorrect.",
     "SEPARATE": "Low-confidence pairs kept separate. Force Merge if you spot a missed match.",
 }
-
 TIER_ICONS = {"STEWARD_REVIEW": "🔍", "AUTO_MERGE": "✅", "SEPARATE": "↔️"}
 
 
@@ -228,14 +213,32 @@ try:
     tiers, total = get_stats()
     tier_map = {t: (c, a) for t, c, a in tiers}
 
-    m1, m2, m3, m4 = st.columns(4)
-    m1.metric("Total Pairs", f"{total:,}")
-    for col, (key, label) in zip(
-        [m2, m3, m4],
-        [("AUTO_MERGE", "Auto Merge"), ("STEWARD_REVIEW", "Steward Review"), ("SEPARATE", "Separate")],
-    ):
-        count, avg = tier_map.get(key, (0, 0))
-        col.metric(label, f"{count:,}", f"avg: {avg}")
+    stats = [
+        ("TOTAL PAIRS", f"{total:,}", ""),
+        ("AUTO MERGE", *[
+            (f"{c:,}", f"avg: {a}") for c, a in [tier_map.get("AUTO_MERGE", (0, 0))]
+        ][0]),
+        ("STEWARD REVIEW", *[
+            (f"{c:,}", f"avg: {a}") for c, a in [tier_map.get("STEWARD_REVIEW", (0, 0))]
+        ][0]),
+        ("SEPARATE", *[
+            (f"{c:,}", f"avg: {a}") for c, a in [tier_map.get("SEPARATE", (0, 0))]
+        ][0]),
+    ]
+
+    cols = st.columns(4)
+    for col, (label, value, delta) in zip(cols, stats):
+        delta_html = f'<div class="stat-delta">{delta}</div>' if delta else '<div class="stat-delta">&nbsp;</div>'
+        col.markdown(
+            f"""
+            <div class="stat-card">
+                <div class="stat-label">{label}</div>
+                <div class="stat-value">{value}</div>
+                {delta_html}
+            </div>
+            """,
+            unsafe_allow_html=True,
+        )
 except Exception as e:
     st.error(f"DB error: {e}")
 
@@ -260,7 +263,6 @@ tab_review, tab_auto, tab_separate = st.tabs([
 
 def render_tier(tier):
     buttons = TIER_BUTTONS[tier]
-
     page_key = f"page_{tier}"
     if page_key not in st.session_state:
         st.session_state[page_key] = 1
@@ -279,7 +281,7 @@ def render_tier(tier):
         st.info("No matching candidates found.")
         return
 
-    st.markdown(f"**{total_rows:,} pairs** — showing page {st.session_state[page_key]} of {total_pages}")
+    st.markdown(f"**{total_rows:,} pairs** — page {st.session_state[page_key]} of {total_pages}")
 
     for c in candidates:
         with st.expander(
@@ -332,7 +334,7 @@ def render_tier(tier):
             st.rerun()
     with p3:
         st.markdown(
-            f'<div class="pagination-info">Page {st.session_state[page_key]} of {total_pages} ({total_rows:,} pairs)</div>',
+            f'<div class="page-info">Page {st.session_state[page_key]} of {total_pages} ({total_rows:,} pairs)</div>',
             unsafe_allow_html=True,
         )
     with p4:
@@ -365,7 +367,7 @@ with tab_separate:
 
 # ── Footer ──────────────────────────────────────────────────
 st.markdown(
-    '<div class="footer">Resolve MDM Copilot v0.3 · Built in public · '
+    '<div class="footer">Resolve MDM Copilot v0.4 · Built in public · '
     '<a href="https://github.com/amansharma03feb/resolve-mdm-copilot">GitHub</a></div>',
     unsafe_allow_html=True,
 )
