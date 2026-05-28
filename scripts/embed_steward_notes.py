@@ -1,4 +1,4 @@
-"""Bulk embed steward notes using Voyage AI voyage-3-lite (512-dim)."""
+"""Verify — bulk embed reviewer notes using Voyage AI voyage-3-lite (512-dim)."""
 
 import os
 import sys
@@ -40,7 +40,7 @@ def main():
     cur = conn.cursor()
 
     cur.execute(
-        "SELECT note_id, note FROM staging.steward_notes WHERE embedding IS NULL ORDER BY note_id"
+        "SELECT note_id, note FROM staging.reviewer_notes WHERE embedding IS NULL ORDER BY note_id"
     )
     rows = cur.fetchall()
 
@@ -59,7 +59,7 @@ def main():
 
         for note_id, vec in zip(ids, vectors):
             cur.execute(
-                "UPDATE staging.steward_notes SET embedding = %s WHERE note_id = %s",
+                "UPDATE staging.reviewer_notes SET embedding = %s WHERE note_id = %s",
                 (str(vec), note_id),
             )
 
@@ -69,7 +69,7 @@ def main():
 
     cur.close()
     conn.close()
-    print("Done — all steward notes embedded.")
+    print("Done — all reviewer notes embedded.")
 
 
 if __name__ == "__main__":

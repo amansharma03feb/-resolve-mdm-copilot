@@ -1,4 +1,4 @@
-# Learning Resources — Resolve MDM Copilot
+# Learning Resources — Verify: AI Copilot for Operational Decision Review
 
 A curated list of resources for every concept used in this project. Organized by topic, starting from the most beginner-friendly.
 

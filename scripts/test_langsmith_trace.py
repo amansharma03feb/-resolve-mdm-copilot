@@ -19,7 +19,7 @@ VOYAGE_API_KEY = os.getenv("VOYAGE_API_KEY")
 LANGSMITH_API_KEY = os.getenv("LANGSMITH_API_KEY")
 
 os.environ.setdefault("LANGCHAIN_TRACING_V2", "true")
-os.environ.setdefault("LANGCHAIN_PROJECT", "resolve-mdm-copilot")
+os.environ.setdefault("LANGCHAIN_PROJECT", "verify-ai-copilot")
 
 if not VOYAGE_API_KEY:
     raise SystemExit("ERROR: Set VOYAGE_API_KEY in .env")

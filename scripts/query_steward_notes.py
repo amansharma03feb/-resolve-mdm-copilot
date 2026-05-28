@@ -1,4 +1,4 @@
-"""Semantic search over steward notes — find similar past decisions."""
+"""Verify — semantic search over reviewer notes for similar past decisions."""
 
 import os
 import sys
@@ -33,10 +33,10 @@ def main():
 
     cur.execute(
         """
-        SELECT note_id, steward, action, confidence,
+        SELECT note_id, reviewer, action, confidence,
                note,
                1 - (embedding <=> %s::vector) AS similarity
-        FROM staging.steward_notes
+        FROM staging.reviewer_notes
         WHERE embedding IS NOT NULL
         ORDER BY embedding <=> %s::vector
         LIMIT 3
@@ -47,8 +47,8 @@ def main():
     results = cur.fetchall()
     print(f'\nQuery: "{QUERY}"\n')
     print("-" * 80)
-    for note_id, steward, action, conf, note, sim in results:
-        print(f"[{action}] similarity={sim:.4f}  confidence={conf}  steward={steward}")
+    for note_id, reviewer, action, conf, note, sim in results:
+        print(f"[{action}] similarity={sim:.4f}  confidence={conf}  reviewer={reviewer}")
         print(f"  {note[:150]}")
         print()
 

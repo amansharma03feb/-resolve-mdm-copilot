@@ -3,9 +3,9 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "resolve-mdm-copilot"
-version = "0.1.0"
-description = "AI-Augmented MDM Steward Copilot for Healthcare"
+name = "verify-ai-copilot"
+version = "0.2.0"
+description = "AI Copilot for Operational Decision Review"
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "Aman Sharma"}]

@@ -1,4 +1,4 @@
-"""Resolve MDM Copilot — Steward Dashboard v4"""
+"""Verify — AI Copilot for Operational Decision Review"""
 
 import math
 import os
@@ -13,7 +13,7 @@ load_dotenv()
 DB_URL = os.getenv("DATABASE_URL")
 
 # ── Page config + CSS ───────────────────────────────────────
-st.set_page_config(page_title="Resolve MDM Copilot", page_icon="🔗", layout="wide")
+st.set_page_config(page_title="Verify — Decision Review", page_icon="✓", layout="wide")
 
 st.markdown(
     """
@@ -117,14 +117,14 @@ def get_stats():
     rows, _ = run_query(
         """
         SELECT tier, COUNT(*), ROUND(AVG(composite_score), 3)
-        FROM staging.match_candidates
+        FROM staging.decision_candidates
         GROUP BY tier
         ORDER BY CASE tier
             WHEN 'AUTO_MERGE' THEN 1 WHEN 'STEWARD_REVIEW' THEN 2 WHEN 'SEPARATE' THEN 3
         END
         """
     )
-    total_rows, _ = run_query("SELECT COUNT(*) FROM staging.match_candidates")
+    total_rows, _ = run_query("SELECT COUNT(*) FROM staging.decision_candidates")
     return rows, total_rows[0][0]
 
 
@@ -149,7 +149,7 @@ def get_candidates(tier, name_filter, state_filter, per_page, page):
                     GREATEST(COALESCE(a.ssn_last4,''), COALESCE(b.ssn_last4,''))
                 ORDER BY mc.composite_score DESC
             ) AS rn
-        FROM staging.match_candidates mc
+        FROM staging.decision_candidates mc
         JOIN staging.members a ON mc.member_id_a = a.member_id
         JOIN staging.members b ON mc.member_id_b = b.member_id
         WHERE mc.tier = %s
@@ -198,16 +198,16 @@ TIER_BUTTONS = {
     "SEPARATE": [("Force Merge", "secondary"), ("Confirm Separate", "primary"), ("Escalate", "secondary")],
 }
 TIER_DESC = {
-    "STEWARD_REVIEW": "Ambiguous pairs needing human judgment — review evidence, then merge, separate, or escalate.",
-    "AUTO_MERGE": "High-confidence matches auto-merged. Confirm or override if incorrect.",
-    "SEPARATE": "Low-confidence pairs kept separate. Force Merge if you spot a missed match.",
+    "STEWARD_REVIEW": "Ambiguous decisions needing reviewer judgment — review evidence, then resolve, separate, or escalate.",
+    "AUTO_MERGE": "High-confidence matches auto-resolved. Confirm or override if incorrect.",
+    "SEPARATE": "Low-confidence pairs kept separate. Force Resolve if you spot a missed match.",
 }
 TIER_ICONS = {"STEWARD_REVIEW": "🔍", "AUTO_MERGE": "✅", "SEPARATE": "↔️"}
 
 
 # ── Header ──────────────────────────────────────────────────
-st.markdown("## Resolve MDM Copilot")
-st.caption("AI-Augmented Steward Dashboard for Healthcare Identity Resolution")
+st.markdown("## Verify")
+st.caption("AI Copilot for Operational Decision Review")
 
 try:
     tiers, total = get_stats()
@@ -218,7 +218,7 @@ try:
         ("AUTO MERGE", *[
             (f"{c:,}", f"avg: {a}") for c, a in [tier_map.get("AUTO_MERGE", (0, 0))]
         ][0]),
-        ("STEWARD REVIEW", *[
+        ("PENDING REVIEW", *[
             (f"{c:,}", f"avg: {a}") for c, a in [tier_map.get("STEWARD_REVIEW", (0, 0))]
         ][0]),
         ("SEPARATE", *[
@@ -255,8 +255,8 @@ with f3:
 
 # ── Tabs ────────────────────────────────────────────────────
 tab_review, tab_auto, tab_separate = st.tabs([
-    f"{TIER_ICONS['STEWARD_REVIEW']} Steward Review",
-    f"{TIER_ICONS['AUTO_MERGE']} Auto Merged",
+    f"{TIER_ICONS['STEWARD_REVIEW']} Pending Review",
+    f"{TIER_ICONS['AUTO_MERGE']} Auto Resolved",
     f"{TIER_ICONS['SEPARATE']} Separated",
 ])
 
@@ -367,7 +367,7 @@ with tab_separate:
 
 # ── Footer ──────────────────────────────────────────────────
 st.markdown(
-    '<div class="footer">Resolve MDM Copilot v0.4 · Built in public · '
+    '<div class="footer">Verify v1.0 · AI Copilot for Operational Decision Review · Built in public · '
     '<a href="https://github.com/amansharma03feb/resolve-mdm-copilot">GitHub</a></div>',
     unsafe_allow_html=True,
 )
