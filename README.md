@@ -5,27 +5,54 @@
 ![Anthropic](https://img.shields.io/badge/Claude-Anthropic-CC785C?logo=anthropic&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-# Resolve — AI-Augmented MDM Steward Copilot
+# Verify — AI Copilot for Operational Decision Review
 
-An open-source AI product that helps healthcare data stewards resolve member identity matches faster, with explainable LLM rationale and HIPAA-aware retrieval.
+An open-source AI copilot that helps operations teams review, explain, and audit their decisions — generating natural-language rationale for each decision and answering follow-up questions over decision history.
 
-**Status:** Day 1 — foundation setup. Architecture, PRD, and demo coming over the next 90 days.
+**Demo dataset:** Synthea synthetic healthcare records (realistic complexity: multiple identifiers, slight variations, ambiguous matches — the kinds of patterns ops teams face in finance, government services, insurance, and any regulated industry).
+
+**Status:** Building in public over ~90 days. Foundations complete. Streamlit dashboard live.
+
+---
+
+## The Problem
+
+Operations teams across regulated industries spend hours reviewing decisions, comparing records, and answering audit questions. Existing tools surface raw data or numeric scores but provide little explanation, forcing reviewers to reconstruct rationale themselves. Audit response is engineering-mediated and slow. As decision volumes grow, manual review becomes a bottleneck.
+
+Verify augments these workflows with explainable AI rationale, conversational decision history, and proactive anomaly monitoring — without replacing the underlying systems.
+
+---
+
+## Two Interfaces
+
+### 1. Decision Rationale Generator
+For any pair of records, events, or decisions, Verify produces a plain-English explanation citing specific evidence. Use cases:
+- Duplicate or near-duplicate detection
+- Anomaly investigation ("why did this metric spike?")
+- Change verification ("why was this record updated?")
+- Quality flagging ("is this entry inconsistent with similar past entries?")
+
+### 2. Ops Q&A Interface
+Natural-language chat over decision history, audit logs, change events, and reviewer notes:
+- "Why was decision X made last March?"
+- "Show me all reviews by Sam in Q2 where the decision was overturned."
+- "What changed in our data last week?"
+
+---
 
 ## Stack
 
-- PostgreSQL on Supabase + pgvector
+| Layer | Technology |
+|-------|-----------|
+| Database | PostgreSQL on Supabase + pgvector |
+| Embeddings | Voyage AI (voyage-3-lite, 512-dim) |
+| Orchestration | LangChain + LangGraph |
+| LLM | Anthropic Claude |
+| Evaluation | Ragas |
+| Observability | LangSmith |
+| UI | Streamlit |
 
-- Voyage AI (embeddings)
-
-- LangChain + LangGraph (orchestration, Week 3+)
-
-- Anthropic Claude (LLM, Week 3+)
-
-- Ragas (RAG evaluation)
-
-- LangSmith (observability)
-
-- Streamlit (UI, Week 4+)
+---
 
 ## Architecture
 
@@ -36,32 +63,32 @@ An open-source AI product that helps healthcare data stewards resolve member ide
 
 ```mermaid
 graph TB
-    subgraph UI["🖥️ Streamlit UI — Steward Dashboard"]
-        UI_REVIEW["Match Review Queue"]
-        UI_LINEAGE["Lineage Q&A Chat"]
+    subgraph UI["Streamlit UI — Reviewer Dashboard"]
+        UI_REVIEW["Decision Review Queue"]
+        UI_LINEAGE["Ops Q&A Chat"]
         UI_METRICS["Eval Metrics Dashboard"]
     end
 
-    subgraph ORCH["🔀 LangGraph Orchestration"]
+    subgraph ORCH["LangGraph Orchestration"]
         TRIAGE["Triage Router"]
-        AUTO["Auto-Merge<br/>score ≥ 0.95"]
-        REVIEW["Steward Review<br/>0.60 – 0.94"]
+        AUTO["Auto-Resolve<br/>score >= 0.95"]
+        REVIEW["Reviewer Review<br/>0.60 - 0.94"]
         SEPARATE["Auto-Separate<br/>score < 0.60"]
     end
 
-    subgraph CORE["⚙️ Core Modules"]
+    subgraph CORE["Core Modules"]
         direction LR
-        subgraph MATCH["Matching Engine"]
-            BLOCKER["Blocker<br/>Soundex · ZIP · DOB"]
-            SCORER["Scorer<br/>Jaro-Winkler · Cosine"]
-            EMBEDDER["Embedder<br/>Voyage AI 1024d"]
+        subgraph MATCH["Decision Matching"]
+            BLOCKER["Blocker<br/>Soundex + DOB"]
+            SCORER["Scorer<br/>Jaro-Winkler + Cosine"]
+            EMBEDDER["Embedder<br/>Voyage AI 512d"]
         end
         subgraph RAG["RAG Pipeline"]
             RETRIEVER["pgvector Retriever<br/>HNSW Index"]
             RATIONALE["Rationale Generator<br/>Claude LLM"]
-            LINEAGE["Lineage Q&A<br/>Claude LLM"]
+            LINEAGE["Ops Q&A<br/>Claude LLM"]
         end
-        subgraph PHI["PHI Safety"]
+        subgraph PHI["Data Safety"]
             REDACTOR["Presidio Redactor<br/>NER Masking"]
             AUDIT["Audit Logger"]
         end
@@ -71,14 +98,14 @@ graph TB
         end
     end
 
-    subgraph DATA["🗄️ Data Layer — Supabase PostgreSQL"]
+    subgraph DATA["Data Layer — Supabase PostgreSQL"]
         RAW["raw.synthea_patients<br/>50K records"]
-        STAGING["staging.members<br/>Normalized + Match Features"]
-        NOTES["staging.member_notes<br/>Embedded Steward Notes"]
-        VECTORS["pgvector + HNSW<br/>1024-dim embeddings"]
+        STAGING["staging.records<br/>Normalized + Features"]
+        NOTES["staging.reviewer_notes<br/>Embedded Decision Notes"]
+        VECTORS["pgvector + HNSW<br/>512-dim embeddings"]
     end
 
-    subgraph EXT["☁️ External Services"]
+    subgraph EXT["External Services"]
         VOYAGE["Voyage AI<br/>Embeddings"]
         CLAUDE["Anthropic Claude<br/>LLM Rationale"]
         LANGSMITH["LangSmith<br/>Observability"]
@@ -119,9 +146,10 @@ graph TB
 
 </details>
 
+---
+
 ## Roadmap
 
 See [`/docs/PRD.md`](docs/PRD.md) for full product spec.
 
 Built in public — follow along on [LinkedIn](#).
-
