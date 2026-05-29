@@ -65,6 +65,21 @@ The scoring pipeline produces realistic tier distributions. The reviewer notes R
 
 ---
 
+## Day 4b — Dashboard Polish & Dark Mode
+
+**What we did:**
+- Redesigned Streamlit dashboard with tabular layout, column filters, and deduplicated queries
+- Added tier-specific action buttons: Merge/Keep Separate/Escalate for STEWARD_REVIEW, Confirm Merge/Undo Merge/Escalate for AUTO_MERGE, Force Merge/Confirm Separate/Escalate for SEPARATE
+- Added red accent bar, full pagination (First/Prev/Next/Last), and per-page selector (10/25/50)
+- Fixed dark mode: replaced hardcoded white backgrounds with transparent stat cards that inherit theme colors
+- Custom HTML stat cards with stat-label/stat-value/stat-delta styling
+- Added deduplication by name+SSN in queries so the same logical pair doesn't appear twice
+
+**Why it matters:**
+The dashboard went from a bare scaffold to a production-quality reviewer interface. Dark mode support and proper pagination are table stakes for a tool people would actually use daily. The tier-specific action buttons map to real operational workflows — different tiers need different decision options.
+
+---
+
 ## Day 5 — Rebrand to Verify + LangSmith Tracing
 
 **What we did:**
@@ -78,6 +93,23 @@ The scoring pipeline produces realistic tier distributions. The reviewer notes R
 
 **Why it matters:**
 The rebrand positions Verify for a broader audience while keeping the same technical architecture. Healthcare data (Synthea) remains the demo dataset, but the framing is domain-agnostic — applicable to finance, government, insurance, supply chain.
+
+---
+
+## Day 6 — PII Redaction + AI Rationale Engine + Audit Logging
+
+**What we did:**
+- Built the PII redaction layer using spaCy NER — masks PERSON, DATE, GPE, LOC, ORG entities before any external LLM call
+- Implemented `redact_text()` / `restore_text()` round-trip so original values never leave the system
+- Built the AI rationale generator using Claude (claude-sonnet-4-6) with Pydantic structured output — returns recommendation (SAME/DISTINCT/ESCALATE), confidence score, evidence citations, and plain-English rationale
+- Added LangSmith tracing via `@traceable` decorator for cost and latency monitoring
+- Created `log_llm_call()` audit function that records every external LLM call (model, redacted input length, response length, cost estimate) to the `external_llm_calls` table
+- SQL migration 014: added `cached_rationale` JSONB column to `decision_candidates` + created `external_llm_calls` audit table
+- Verified Claude API connectivity with a hello-world test script
+- Updated PRD to v0.5 with full version history tracking
+
+**Why it matters:**
+This is the core AI brain of Verify. PII redaction ensures sensitive data never reaches external APIs (Feature 5 — Data Safety Layer). The rationale engine provides the explainable AI that makes the review inbox useful (Feature 1 — Decision Review Inbox). Audit logging satisfies compliance requirements for regulated industries. Caching rationale avoids redundant LLM calls and reduces cost.
 
 ---
 
@@ -95,16 +127,20 @@ The rebrand positions Verify for a broader audience while keeping the same techn
 | Decision candidates | Done | 38,867 scored pairs across 3 tiers |
 | Synthetic test data | Done | 200 injected with controlled noise |
 | Note embeddings | Done | voyage-3-lite 512-dim + HNSW index |
-| Streamlit dashboard | Done | Reviewer inbox, filters, pagination |
+| Streamlit dashboard | Done | Reviewer inbox, filters, pagination, dark mode, tier-specific actions |
 | LangSmith tracing | Done | Test script verified |
-| PRD | Done | v0.4, rebranded |
+| PRD | Done | v0.5, version-tracked |
 | Architecture doc | Done | Layer diagram + data flow |
+| PII redaction | Done | spaCy NER, 5 entity types |
+| AI rationale engine | Done | Claude + Pydantic structured output |
+| LLM audit logging | Done | external_llm_calls table + log function |
+| Cached rationale | Done | JSONB column on decision_candidates |
+| LangSmith tracing | Done | @traceable on rationale generation |
 
-## What's Next (Week 4)
+## What's Next
 
-- RAG pipeline for AI rationale generation (Claude + retrieved reviewer notes)
-- Wire rationale into Streamlit inbox cards
-- Data safety layer (Presidio redaction before LLM calls)
+- Wire rationale into Streamlit inbox cards (replace "coming soon" placeholder)
 - Golden eval set (100 labeled cases)
 - Ragas evaluation framework
 - Ops Q&A chat interface
+- End-to-end integration: redact → generate rationale → cache → display

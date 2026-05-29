@@ -13,7 +13,7 @@ load_dotenv()
 DB_URL = os.getenv("DATABASE_URL")
 
 # ── Page config + CSS ───────────────────────────────────────
-st.set_page_config(page_title="Verify — Decision Review", page_icon="✓", layout="wide")
+st.set_page_config(page_title="AI Copilot for Operational Decision Review", page_icon="✓", layout="wide")
 
 st.markdown(
     """
@@ -206,8 +206,7 @@ TIER_ICONS = {"STEWARD_REVIEW": "🔍", "AUTO_MERGE": "✅", "SEPARATE": "↔️
 
 
 # ── Header ──────────────────────────────────────────────────
-st.markdown("## Verify")
-st.caption("AI Copilot for Operational Decision Review")
+st.markdown("## AI Copilot for Operational Decision Review")
 
 try:
     tiers, total = get_stats()
@@ -367,7 +366,7 @@ with tab_separate:
 
 # ── Footer ──────────────────────────────────────────────────
 st.markdown(
-    '<div class="footer">Verify v1.0 · AI Copilot for Operational Decision Review · Built in public · '
+    '<div class="footer">AI Copilot for Operational Decision Review v1.0 · Built in public · '
     '<a href="https://github.com/amansharma03feb/resolve-mdm-copilot">GitHub</a></div>',
     unsafe_allow_html=True,
 )

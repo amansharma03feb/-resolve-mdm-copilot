@@ -2,7 +2,7 @@
 
 **Project:** Verify — AI Copilot for Operational Decision Review
 **Author:** Aman Sharma
-**Status:** v0.4 — Rebranded from Resolve MDM Copilot to Verify
+**Status:** v0.5 — PII Redaction + AI Rationale Engine + Audit Logging
 **Last updated:** 2026-05-29
 
 ---
@@ -15,6 +15,7 @@
 | v0.2 | 2026-05-13 | Added competitive landscape, refined MVP slice, added open questions | No scope change — clarified positioning |
 | v0.3 | 2026-05-17 | Added Section 11 (build learnings). IVFFlat dropped for HNSW. Voyage AI replaced OpenAI for embeddings. ZIP coverage gap documented. ADR-001 and ADR-002 referenced. | **Scope narrowed:** removed IVFFlat as indexing option. **Tech change:** Voyage AI replaces OpenAI embeddings. No feature scope creep. |
 | v0.4 | 2026-05-29 | **Full rebrand** from "Resolve MDM Copilot" to "Verify." Persona changed from Maria Rodriguez (healthcare steward) to Sam Chen (ops analyst). Framing changed from healthcare MDM to generic operational decision review. Tables renamed: match_candidates -> decision_candidates, steward_notes -> reviewer_notes. Competitive landscape rewritten (generic AI copilot space). | **Scope expanded (justified):** broader positioning for LinkedIn/public portfolio. Core technical architecture unchanged. |
+| v0.5 | 2026-05-29 | Implemented PII redaction layer (spaCy NER for PERSON, DATE, GPE, LOC, ORG). Built AI rationale generator (Claude + Pydantic structured output + LangSmith tracing). Added `cached_rationale` JSONB column to decision_candidates. Created `external_llm_calls` audit table. Added `log_llm_call()` for tracking every external LLM API call with cost estimates. | No scope change — delivers Feature 5 (Data Safety Layer) and core of Feature 1 (Decision Review Inbox rationale). All planned in v0.1. |
 
 ### Scope Tracking Rules
 - Every PRD update gets a version bump and a row in this table
@@ -212,6 +213,13 @@ Synthetic eval is necessary but not sufficient. Before production, a 30-60 case 
 5. **Voyage AI over OpenAI for embeddings.** Switched to voyage-3-lite (512 dims). 200M free tokens, retrieval-optimized, fewer dimensions.
 6. **ZIP coverage is only 53%.** Fallback blocking keys needed for the remaining 47%.
 7. **Name normalization needs source-specific handling.** Synthea appends random digits — stripped during staging transform.
+
+### Day 6 Learnings
+
+8. **spaCy NER is sufficient for structured record redaction.** PERSON, DATE, GPE, LOC, ORG cover the PII categories in ops review data. No need for heavier frameworks like Presidio at this stage.
+9. **Pydantic structured output beats free-form JSON parsing.** Claude returns valid JSON reliably with a clear schema prompt; Pydantic validation catches malformed responses before they reach the UI.
+10. **LangSmith tracing is trivial to add.** One `@traceable` decorator per function. Cost and latency tracking come free.
+11. **Audit logging of external LLM calls is essential for regulated environments.** Tracks what was sent (redacted length), what came back (response length), model used, and estimated cost.
 
 ### Architecture Decisions Documented
 
