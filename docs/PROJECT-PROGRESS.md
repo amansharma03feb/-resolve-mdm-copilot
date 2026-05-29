@@ -113,6 +113,24 @@ This is the core AI brain of Verify. PII redaction ensures sensitive data never 
 
 ---
 
+## Day 7 — Golden Eval Set + Ragas Harness + UI Rationale Wired
+
+**What we did:**
+- Created 100-case golden evaluation set (`eval/golden-set.csv`) with intentional distribution: 30 high-confidence (>0.9), 50 grey-zone (0.6-0.9), 20 low-confidence (<0.6)
+- Each case includes: both records, all scores, gold decision (SAME/DISTINCT/ESCALATE), and hand-written gold rationale
+- Built the Ragas evaluation harness (`eval/run_eval.py`): loads golden set, runs full redact→rationale pipeline per case, computes decision agreement, auto-resolve precision, per-tier accuracy, latency
+- Results save to both `eval/results/run_<timestamp>.json` and `staging.eval_runs` Supabase table
+- SQL migration 015: created `eval_runs` table for persisting eval results
+- Wired AI rationale into Streamlit inbox — replaced "coming soon" placeholder with:
+  - "Generate AI Rationale" button that runs redact→rationale→cache pipeline
+  - Cached rationale display showing recommendation, confidence, rationale text, and expandable evidence
+- Updated PRD to v0.6 with version history row and Day 7 learnings (items 12-15)
+
+**Why it matters:**
+The golden eval set and harness close the eval loop — we can now measure whether the AI is actually making good decisions, not just generating plausible text. The UI integration means reviewers see real AI rationale on every case. This completes the core Feature 1 (Decision Review Inbox) end-to-end: data → scores → rationale → display.
+
+---
+
 ## What's Built So Far (Summary)
 
 | Component | Status | Details |
@@ -129,18 +147,22 @@ This is the core AI brain of Verify. PII redaction ensures sensitive data never 
 | Note embeddings | Done | voyage-3-lite 512-dim + HNSW index |
 | Streamlit dashboard | Done | Reviewer inbox, filters, pagination, dark mode, tier-specific actions |
 | LangSmith tracing | Done | Test script verified |
-| PRD | Done | v0.5, version-tracked |
+| PRD | Done | v0.6, version-tracked |
 | Architecture doc | Done | Layer diagram + data flow |
 | PII redaction | Done | spaCy NER, 5 entity types |
 | AI rationale engine | Done | Claude + Pydantic structured output |
 | LLM audit logging | Done | external_llm_calls table + log function |
 | Cached rationale | Done | JSONB column on decision_candidates |
 | LangSmith tracing | Done | @traceable on rationale generation |
+| UI rationale display | Done | Generate button + cached display in inbox |
+| Golden eval set | Done | 100 cases (30 HC / 50 GZ / 20 LC) |
+| Ragas eval harness | Done | run_eval.py → JSON + Supabase |
+| Eval runs table | Done | staging.eval_runs (SQL 015) |
 
 ## What's Next
 
-- Wire rationale into Streamlit inbox cards (replace "coming soon" placeholder)
-- Golden eval set (100 labeled cases)
-- Ragas evaluation framework
-- Ops Q&A chat interface
-- End-to-end integration: redact → generate rationale → cache → display
+- Run first baseline eval and record numbers
+- Ops Q&A chat interface (RAG over reviewer notes)
+- Drift Watcher (anomaly detection on scores/rates)
+- Reviewer Productivity Dashboard
+- End-to-end integration testing

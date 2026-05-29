@@ -1,12 +1,18 @@
 """Verify — AI Copilot for Operational Decision Review"""
 
+import json
 import math
 import os
+import sys
 
 import pandas as pd
 import psycopg2
 import streamlit as st
 from dotenv import load_dotenv
+
+# Allow imports from project root
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
 
 load_dotenv()
 
@@ -133,6 +139,7 @@ def get_candidates(tier, name_filter, state_filter, per_page, page):
         SELECT
             mc.pair_id, mc.composite_score, mc.tier,
             mc.score_name, mc.score_dob, mc.score_ssn, mc.score_address,
+            mc.cached_rationale,
             a.first_name AS first_a, a.last_name AS last_a,
             a.date_of_birth AS dob_a, a.ssn_last4 AS ssn_a,
             a.city AS city_a, a.state AS state_a,
@@ -311,7 +318,57 @@ def render_tier(tier):
             })
             st.dataframe(df, use_container_width=True, hide_index=True)
 
-            st.caption("AI rationale: *(coming soon)*")
+            # ── AI Rationale ──
+            rationale = c.get("cached_rationale")
+            if rationale:
+                r = rationale if isinstance(rationale, dict) else json.loads(rationale)
+                rec = r.get("recommendation", "—")
+                conf = r.get("confidence", 0)
+                rec_color = {"SAME": "🟢", "DISTINCT": "🔴", "ESCALATE": "🟡"}.get(rec, "⚪")
+                st.markdown(f"**AI Rationale:** {rec_color} **{rec}** · Confidence: **{conf:.0%}**")
+                st.caption(r.get("rationale_text", ""))
+                if r.get("evidence"):
+                    with st.popover("📋 Evidence details"):
+                        for ev in r["evidence"]:
+                            st.markdown(f"- {ev}")
+            else:
+                gen_key = f"gen_rationale_{tier}_{c['pair_id']}"
+                if st.button("🤖 Generate AI Rationale", key=gen_key, type="secondary"):
+                    with st.spinner("Generating rationale..."):
+                        try:
+                            from src.resolve.phi_safety.redactor import redact_text, restore_text, log_llm_call
+                            from src.resolve.rag.rationale import generate_rationale, format_pair
+
+                            rec_a = {"name": f"{c['first_a']} {c['last_a']}", "dob": str(c.get("dob_a", "")),
+                                     "ssn": c.get("ssn_a", ""), "city": c.get("city_a", ""),
+                                     "state": c.get("state_a", ""), "source": c.get("src_a", "")}
+                            rec_b = {"name": f"{c['first_b']} {c['last_b']}", "dob": str(c.get("dob_b", "")),
+                                     "ssn": c.get("ssn_b", ""), "city": c.get("city_b", ""),
+                                     "state": c.get("state_b", ""), "source": c.get("src_b", "")}
+                            scores = {"name": c["score_name"], "dob": c["score_dob"],
+                                      "ssn": c["score_ssn"], "address": c["score_address"],
+                                      "composite": c["composite_score"]}
+
+                            raw_input = format_pair(rec_a, rec_b, scores)
+                            redacted_input, mapping = redact_text(raw_input)
+                            result = generate_rationale(rec_a, rec_b, scores, redacted_input=redacted_input)
+                            rationale_json = result.model_dump()
+                            rationale_json["recommendation"] = rationale_json["recommendation"].value
+
+                            # Cache to DB
+                            conn = get_connection()
+                            cur = conn.cursor()
+                            cur.execute(
+                                "UPDATE staging.decision_candidates SET cached_rationale = %s WHERE pair_id = %s",
+                                (json.dumps(rationale_json), c["pair_id"]),
+                            )
+                            conn.commit()
+                            cur.close()
+
+                            log_llm_call("claude-sonnet-4-6", len(redacted_input), len(str(rationale_json)))
+                            st.rerun()
+                        except Exception as e:
+                            st.error(f"Rationale generation failed: {e}")
 
             btn_cols = st.columns([1, 1, 1, 4])
             for idx, (label, btn_type) in enumerate(buttons):

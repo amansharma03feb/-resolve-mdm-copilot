@@ -2,8 +2,8 @@
 
 **Project:** Verify — AI Copilot for Operational Decision Review
 **Author:** Aman Sharma
-**Status:** v0.5 — PII Redaction + AI Rationale Engine + Audit Logging
-**Last updated:** 2026-05-29
+**Status:** v0.6 — Golden Eval Set + Ragas Harness + UI Rationale Wired
+**Last updated:** 2026-05-30
 
 ---
 
@@ -16,6 +16,7 @@
 | v0.3 | 2026-05-17 | Added Section 11 (build learnings). IVFFlat dropped for HNSW. Voyage AI replaced OpenAI for embeddings. ZIP coverage gap documented. ADR-001 and ADR-002 referenced. | **Scope narrowed:** removed IVFFlat as indexing option. **Tech change:** Voyage AI replaces OpenAI embeddings. No feature scope creep. |
 | v0.4 | 2026-05-29 | **Full rebrand** from "Resolve MDM Copilot" to "Verify." Persona changed from Maria Rodriguez (healthcare steward) to Sam Chen (ops analyst). Framing changed from healthcare MDM to generic operational decision review. Tables renamed: match_candidates -> decision_candidates, steward_notes -> reviewer_notes. Competitive landscape rewritten (generic AI copilot space). | **Scope expanded (justified):** broader positioning for LinkedIn/public portfolio. Core technical architecture unchanged. |
 | v0.5 | 2026-05-29 | Implemented PII redaction layer (spaCy NER for PERSON, DATE, GPE, LOC, ORG). Built AI rationale generator (Claude + Pydantic structured output + LangSmith tracing). Added `cached_rationale` JSONB column to decision_candidates. Created `external_llm_calls` audit table. Added `log_llm_call()` for tracking every external LLM API call with cost estimates. | No scope change — delivers Feature 5 (Data Safety Layer) and core of Feature 1 (Decision Review Inbox rationale). All planned in v0.1. |
+| v0.6 | 2026-05-30 | 100-case golden eval set committed (30 high-confidence, 50 grey-zone, 20 low-confidence). Built Ragas evaluation harness: loads golden set, runs rationale chain per case, computes decision agreement / auto-resolve precision / tier accuracy / latency. Results saved to `eval_runs` Supabase table + JSON. Wired AI rationale into Streamlit inbox — generate button with PII redaction + cached display. SQL 015: eval_runs table. | No scope change — delivers eval framework planned in PRD Section 7 and completes Feature 1 (inbox shows real rationale). |
 
 ### Scope Tracking Rules
 - Every PRD update gets a version bump and a row in this table
@@ -220,6 +221,13 @@ Synthetic eval is necessary but not sufficient. Before production, a 30-60 case 
 9. **Pydantic structured output beats free-form JSON parsing.** Claude returns valid JSON reliably with a clear schema prompt; Pydantic validation catches malformed responses before they reach the UI.
 10. **LangSmith tracing is trivial to add.** One `@traceable` decorator per function. Cost and latency tracking come free.
 11. **Audit logging of external LLM calls is essential for regulated environments.** Tracks what was sent (redacted length), what came back (response length), model used, and estimated cost.
+
+### Day 7 Learnings
+
+12. **Golden set design matters more than size.** 100 cases with intentional distribution (30/50/20 across confidence tiers) covers edge cases better than 1,000 random samples.
+13. **Decision agreement is the primary eval metric.** Ragas faithfulness/relevancy require retrieval context — for a structured rationale pipeline, decision agreement + auto-resolve precision are more actionable.
+14. **Caching rationale to DB avoids redundant LLM calls.** Generate once, display many times. Critical for cost control at scale.
+15. **Eval harness must be runnable without DB.** JSON output ensures eval works even if Supabase is down — DB write is a bonus, not a dependency.
 
 ### Architecture Decisions Documented
 
