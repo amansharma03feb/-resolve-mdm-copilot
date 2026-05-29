@@ -65,6 +65,21 @@ The scoring pipeline produces realistic tier distributions. The reviewer notes R
 
 ---
 
+## Day 4b — Dashboard Polish & Dark Mode
+
+**What we did:**
+- Redesigned Streamlit dashboard with tabular layout, column filters, and deduplicated queries
+- Added tier-specific action buttons: Merge/Keep Separate/Escalate for STEWARD_REVIEW, Confirm Merge/Undo Merge/Escalate for AUTO_MERGE, Force Merge/Confirm Separate/Escalate for SEPARATE
+- Added red accent bar, full pagination (First/Prev/Next/Last), and per-page selector (10/25/50)
+- Fixed dark mode: replaced hardcoded white backgrounds with transparent stat cards that inherit theme colors
+- Custom HTML stat cards with stat-label/stat-value/stat-delta styling
+- Added deduplication by name+SSN in queries so the same logical pair doesn't appear twice
+
+**Why it matters:**
+The dashboard went from a bare scaffold to a production-quality reviewer interface. Dark mode support and proper pagination are table stakes for a tool people would actually use daily. The tier-specific action buttons map to real operational workflows — different tiers need different decision options.
+
+---
+
 ## Day 5 — Rebrand to Verify + LangSmith Tracing
 
 **What we did:**
@@ -112,7 +127,7 @@ This is the core AI brain of Verify. PII redaction ensures sensitive data never 
 | Decision candidates | Done | 38,867 scored pairs across 3 tiers |
 | Synthetic test data | Done | 200 injected with controlled noise |
 | Note embeddings | Done | voyage-3-lite 512-dim + HNSW index |
-| Streamlit dashboard | Done | Reviewer inbox, filters, pagination |
+| Streamlit dashboard | Done | Reviewer inbox, filters, pagination, dark mode, tier-specific actions |
 | LangSmith tracing | Done | Test script verified |
 | PRD | Done | v0.5, version-tracked |
 | Architecture doc | Done | Layer diagram + data flow |
