@@ -2,8 +2,8 @@
 
 **Project:** Verify — AI Copilot for Operational Decision Review
 **Author:** Aman Sharma
-**Status:** v0.6 — Golden Eval Set + Ragas Harness + UI Rationale Wired
-**Last updated:** 2026-05-30
+**Status:** v0.7 — Hybrid Retrieval + Reranking + Ops Q&A + Anomaly Watcher
+**Last updated:** 2026-06-06
 
 ---
 
@@ -17,6 +17,7 @@
 | v0.4 | 2026-05-29 | **Full rebrand** from "Resolve MDM Copilot" to "Verify." Persona changed from Maria Rodriguez (healthcare steward) to Sam Chen (ops analyst). Framing changed from healthcare MDM to generic operational decision review. Tables renamed: match_candidates -> decision_candidates, steward_notes -> reviewer_notes. Competitive landscape rewritten (generic AI copilot space). | **Scope expanded (justified):** broader positioning for LinkedIn/public portfolio. Core technical architecture unchanged. |
 | v0.5 | 2026-05-29 | Implemented PII redaction layer (spaCy NER for PERSON, DATE, GPE, LOC, ORG). Built AI rationale generator (Claude + Pydantic structured output + LangSmith tracing). Added `cached_rationale` JSONB column to decision_candidates. Created `external_llm_calls` audit table. Added `log_llm_call()` for tracking every external LLM API call with cost estimates. | No scope change — delivers Feature 5 (Data Safety Layer) and core of Feature 1 (Decision Review Inbox rationale). All planned in v0.1. |
 | v0.6 | 2026-05-30 | 100-case golden eval set committed (30 high-confidence, 50 grey-zone, 20 low-confidence). Built Ragas evaluation harness: loads golden set, runs rationale chain per case, computes decision agreement / auto-resolve precision / tier accuracy / latency. Results saved to `eval_runs` Supabase table + JSON. Wired AI rationale into Streamlit inbox — generate button with PII redaction + cached display. SQL 015: eval_runs table. | No scope change — delivers eval framework planned in PRD Section 7 and completes Feature 1 (inbox shows real rationale). |
+| v0.7 | 2026-06-06 | Hybrid retrieval: tsvector column + `hybrid_search_notes` Postgres function combining vector similarity with full-text rank. Cohere Rerank integration (top-50 → rerank → top-5) with graceful fallback. Ops Q&A chain: LangChain RAG with `OpsAnswer` Pydantic schema (answer, cited_evidence_ids, confidence). Ops Q&A Streamlit tab with chat UI, clickable evidence citations, `ops_queries` audit table. Anomaly Watcher: 4 metrics (daily volume, source staleness, confidence drift, attribute completeness) with 2σ alerting, 30-day sparklines, and Claude-powered alert explanations. SQL 016-018. | No scope change — delivers Feature 2 (Ops Q&A RAG) and Feature 4 (Drift Watcher). Both planned in v0.1. |
 
 ### Scope Tracking Rules
 - Every PRD update gets a version bump and a row in this table
@@ -228,6 +229,14 @@ Synthetic eval is necessary but not sufficient. Before production, a 30-60 case 
 13. **Decision agreement is the primary eval metric.** Ragas faithfulness/relevancy require retrieval context — for a structured rationale pipeline, decision agreement + auto-resolve precision are more actionable.
 14. **Caching rationale to DB avoids redundant LLM calls.** Generate once, display many times. Critical for cost control at scale.
 15. **Eval harness must be runnable without DB.** JSON output ensures eval works even if Supabase is down — DB write is a bonus, not a dependency.
+
+### Days 8-13 Learnings
+
+16. **Hybrid search catches keyword-specific queries that pure vector misses.** Full-text search on tsvector finds exact terms ("SSN transposed", "ZIP+4") while vector search captures semantic similarity.
+17. **Cohere Rerank adds measurable precision at negligible cost.** Free tier covers evaluation; reranker surfaces domain-relevant notes that hybrid search scores lower due to embedding noise.
+18. **Pydantic output schemas for Q&A enforce citation discipline.** `OpsAnswer.cited_evidence_ids` forces the LLM to reference specific note_ids, which we validate against retrieved results.
+19. **Anomaly detection needs baselines before it can alert.** First 30 days of data establish normal ranges; alerts fire only when 2σ deviations occur. Without baseline, everything is "normal."
+20. **Claude can generate useful anomaly explanations from metric context.** One-sentence hypothesis beats silence — gives ops teams a starting point for investigation.
 
 ### Architecture Decisions Documented
 

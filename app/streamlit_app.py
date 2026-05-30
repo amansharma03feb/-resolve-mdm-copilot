@@ -260,10 +260,12 @@ with f3:
     per_page = st.selectbox("Per page", [10, 25, 50], index=0)
 
 # ── Tabs ────────────────────────────────────────────────────
-tab_review, tab_auto, tab_separate = st.tabs([
+tab_review, tab_auto, tab_separate, tab_qa, tab_anomaly = st.tabs([
     f"{TIER_ICONS['STEWARD_REVIEW']} Pending Review",
     f"{TIER_ICONS['AUTO_MERGE']} Auto Resolved",
     f"{TIER_ICONS['SEPARATE']} Separated",
+    "💬 Ops Q&A",
+    "📊 Anomaly Watcher",
 ])
 
 
@@ -420,6 +422,221 @@ with tab_separate:
         render_tier("SEPARATE")
     except Exception as e:
         st.error(f"Error: {e}")
+
+# ── Ops Q&A Tab ───────────────────────────────────────────────
+with tab_qa:
+    st.caption("Ask questions about past decisions, reviewer actions, and operational patterns. Answers are grounded in reviewer notes with clickable citations.")
+
+    # Initialize chat history
+    if "qa_messages" not in st.session_state:
+        st.session_state.qa_messages = []
+
+    # Display chat history
+    for msg in st.session_state.qa_messages:
+        with st.chat_message(msg["role"]):
+            st.markdown(msg["content"])
+            if msg.get("citations"):
+                with st.expander("📋 Evidence Citations", expanded=False):
+                    for cite in msg["citations"]:
+                        st.markdown(
+                            f"**[note\\_id={cite['note_id']}]** `{cite['action']}` by {cite['reviewer']} "
+                            f"(conf={cite['confidence']:.2f})"
+                        )
+                        st.caption(cite["note"][:200] + ("..." if len(cite["note"]) > 200 else ""))
+
+    # Chat input
+    if question := st.chat_input("Ask about past decisions..."):
+        st.session_state.qa_messages.append({"role": "user", "content": question})
+        with st.chat_message("user"):
+            st.markdown(question)
+
+        with st.chat_message("assistant"):
+            with st.spinner("Searching reviewer notes and generating answer..."):
+                try:
+                    import time as _time
+                    from src.resolve.rag.lineage_qa import answer_ops_question
+
+                    t0 = _time.time()
+                    answer, notes = answer_ops_question(question)
+                    latency = _time.time() - t0
+
+                    st.markdown(answer.answer_text)
+                    st.caption(f"Confidence: {answer.confidence:.0%} · {len(notes)} notes searched · {latency:.1f}s")
+
+                    # Show cited evidence
+                    cited_notes = [n for n in notes if n["note_id"] in answer.cited_evidence_ids]
+                    if cited_notes:
+                        with st.expander("📋 Evidence Citations", expanded=True):
+                            for cite in cited_notes:
+                                st.markdown(
+                                    f"**[note\\_id={cite['note_id']}]** `{cite['action']}` by {cite['reviewer']} "
+                                    f"(conf={cite['confidence']:.2f})"
+                                )
+                                st.caption(cite["note"][:200] + ("..." if len(cite["note"]) > 200 else ""))
+
+                    # Save to chat history
+                    st.session_state.qa_messages.append({
+                        "role": "assistant",
+                        "content": answer.answer_text,
+                        "citations": cited_notes,
+                    })
+
+                    # Save to DB
+                    try:
+                        conn = get_connection()
+                        cur = conn.cursor()
+                        cur.execute(
+                            """INSERT INTO staging.ops_queries
+                               (question, answer_text, cited_note_ids, confidence, notes_retrieved, latency_s)
+                               VALUES (%s, %s, %s, %s, %s, %s)""",
+                            (question, answer.answer_text, answer.cited_evidence_ids,
+                             answer.confidence, len(notes), round(latency, 3)),
+                        )
+                        conn.commit()
+                        cur.close()
+                    except Exception:
+                        pass  # DB logging is best-effort
+
+                except Exception as e:
+                    st.error(f"Q&A failed: {e}")
+                    st.session_state.qa_messages.append({"role": "assistant", "content": f"Error: {e}"})
+
+# ── Anomaly Watcher Tab ───────────────────────────────────────
+with tab_anomaly:
+    st.caption("Automated anomaly detection across 4 operational metrics. Alerts fire when values exceed 2 standard deviations from the 30-day baseline.")
+
+    try:
+        # Daily candidate volume
+        vol_rows, _ = run_query("""
+            SELECT DATE(created_at) AS day, COUNT(*) AS volume
+            FROM staging.decision_candidates
+            GROUP BY DATE(created_at)
+            ORDER BY day DESC
+            LIMIT 30
+        """)
+
+        if vol_rows:
+            vol_df = pd.DataFrame(vol_rows, columns=["day", "volume"])
+            vol_mean = vol_df["volume"].mean()
+            vol_std = vol_df["volume"].std()
+            vol_latest = vol_df.iloc[0]["volume"] if len(vol_df) > 0 else 0
+
+            # Source freshness
+            fresh_rows, _ = run_query("""
+                SELECT source_system, MAX(created_at) AS latest,
+                       EXTRACT(EPOCH FROM (now() - MAX(created_at))) / 3600 AS hours_stale
+                FROM staging.members
+                GROUP BY source_system
+                ORDER BY hours_stale DESC
+            """)
+            fresh_df = pd.DataFrame(fresh_rows, columns=["source", "latest", "hours_stale"])
+
+            # Confidence drift (7-day moving avg)
+            conf_rows, _ = run_query("""
+                SELECT DATE(created_at) AS day,
+                       AVG(composite_score) AS avg_score
+                FROM staging.decision_candidates
+                GROUP BY DATE(created_at)
+                ORDER BY day DESC
+                LIMIT 30
+            """)
+            conf_df = pd.DataFrame(conf_rows, columns=["day", "avg_score"])
+            conf_mean = conf_df["avg_score"].mean() if len(conf_df) > 0 else 0
+            conf_std = conf_df["avg_score"].std() if len(conf_df) > 0 else 0
+
+            # Attribute completeness
+            comp_rows, _ = run_query("""
+                SELECT source_system,
+                       COUNT(*) AS total,
+                       SUM(CASE WHEN date_of_birth IS NOT NULL THEN 1 ELSE 0 END)::float / COUNT(*) AS dob_pct,
+                       SUM(CASE WHEN ssn_last4 IS NOT NULL THEN 1 ELSE 0 END)::float / COUNT(*) AS ssn_pct,
+                       SUM(CASE WHEN zip5 IS NOT NULL THEN 1 ELSE 0 END)::float / COUNT(*) AS zip_pct
+                FROM staging.members
+                GROUP BY source_system
+            """)
+            comp_df = pd.DataFrame(comp_rows, columns=["source", "total", "dob_pct", "ssn_pct", "zip_pct"])
+
+            # KPI tiles
+            k1, k2, k3, k4 = st.columns(4)
+            with k1:
+                vol_alert = abs(vol_latest - vol_mean) > 2 * vol_std if vol_std > 0 else False
+                badge = "🔴" if vol_alert else "🟢"
+                st.metric(f"{badge} Daily Volume", f"{vol_latest:,.0f}", f"avg: {vol_mean:,.0f}")
+            with k2:
+                max_stale = fresh_df["hours_stale"].max() if len(fresh_df) > 0 else 0
+                stale_alert = max_stale > 48
+                badge = "🔴" if stale_alert else "🟢"
+                st.metric(f"{badge} Max Staleness", f"{max_stale:.0f}h", f"{len(fresh_df)} sources")
+            with k3:
+                conf_latest = conf_df.iloc[0]["avg_score"] if len(conf_df) > 0 else 0
+                conf_alert = abs(conf_latest - conf_mean) > 2 * conf_std if conf_std > 0 else False
+                badge = "🔴" if conf_alert else "🟢"
+                st.metric(f"{badge} Avg Confidence", f"{conf_latest:.3f}", f"baseline: {conf_mean:.3f}")
+            with k4:
+                avg_zip = comp_df["zip_pct"].mean() if len(comp_df) > 0 else 0
+                zip_alert = avg_zip < 0.5
+                badge = "🔴" if zip_alert else "🟢"
+                st.metric(f"{badge} ZIP Coverage", f"{avg_zip:.0%}", "across all sources")
+
+            # Sparklines
+            st.markdown("---")
+            c1, c2 = st.columns(2)
+            with c1:
+                if len(vol_df) > 1:
+                    st.markdown("**Daily Candidate Volume (30 days)**")
+                    st.line_chart(vol_df.set_index("day")["volume"])
+            with c2:
+                if len(conf_df) > 1:
+                    st.markdown("**Avg Confidence Score (30 days)**")
+                    st.line_chart(conf_df.set_index("day")["avg_score"])
+
+            st.markdown("---")
+            c3, c4 = st.columns(2)
+            with c3:
+                st.markdown("**Source Freshness**")
+                st.dataframe(fresh_df, use_container_width=True, hide_index=True)
+            with c4:
+                st.markdown("**Attribute Completeness by Source**")
+                st.dataframe(comp_df, use_container_width=True, hide_index=True)
+
+            # Alert explanation
+            alerts = []
+            if vol_alert:
+                alerts.append(f"Daily volume ({vol_latest:,.0f}) is >2σ from baseline ({vol_mean:,.0f} ± {vol_std:,.0f})")
+            if stale_alert:
+                alerts.append(f"Source data staleness ({max_stale:.0f}h) exceeds 48h threshold")
+            if conf_alert:
+                alerts.append(f"Confidence score ({conf_latest:.3f}) drifted >2σ from baseline ({conf_mean:.3f})")
+            if zip_alert:
+                alerts.append(f"ZIP coverage ({avg_zip:.0%}) is below 50% threshold")
+
+            if alerts:
+                st.markdown("### ⚠️ Active Alerts")
+                for alert in alerts:
+                    st.warning(alert)
+
+                # LLM explanation
+                if st.button("🤖 Explain Alerts", key="explain_anomaly"):
+                    with st.spinner("Generating explanation..."):
+                        try:
+                            from langchain_anthropic import ChatAnthropic as _ChatAnthropic
+                            _llm = _ChatAnthropic(model="claude-sonnet-4-6", max_tokens=256)
+                            alert_text = "\n".join(f"- {a}" for a in alerts)
+                            resp = _llm.invoke([
+                                {"role": "system", "content": "You are a data ops analyst. Given anomaly alerts, write a 1-2 sentence likely cause hypothesis. Be specific and actionable."},
+                                {"role": "user", "content": f"Active alerts:\n{alert_text}\n\nWhat is the most likely cause?"},
+                            ])
+                            st.info(f"**Likely cause:** {resp.content}")
+                        except Exception as e:
+                            st.error(f"Explanation failed: {e}")
+            else:
+                st.success("✅ No anomalies detected — all metrics within normal range.")
+
+        else:
+            st.info("No candidate data available for anomaly monitoring.")
+
+    except Exception as e:
+        st.error(f"Anomaly watcher error: {e}")
 
 # ── Footer ──────────────────────────────────────────────────
 st.markdown(
