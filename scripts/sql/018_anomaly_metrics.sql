@@ -49,7 +49,7 @@ BEGIN
     SELECT COALESCE(MAX(EXTRACT(EPOCH FROM (now() - latest)) / 3600), 0)::numeric
     INTO v_max_stale_h
     FROM (
-        SELECT source_system, MAX(created_at) AS latest
+        SELECT source_system, MAX(loaded_at) AS latest
         FROM staging.members
         GROUP BY source_system
     ) sub;

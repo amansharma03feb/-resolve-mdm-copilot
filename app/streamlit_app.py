@@ -523,8 +523,8 @@ with tab_anomaly:
 
             # Source freshness
             fresh_rows, _ = run_query("""
-                SELECT source_system, MAX(created_at) AS latest,
-                       EXTRACT(EPOCH FROM (now() - MAX(created_at))) / 3600 AS hours_stale
+                SELECT source_system, MAX(loaded_at) AS latest,
+                       EXTRACT(EPOCH FROM (now() - MAX(loaded_at))) / 3600 AS hours_stale
                 FROM staging.members
                 GROUP BY source_system
                 ORDER BY hours_stale DESC
