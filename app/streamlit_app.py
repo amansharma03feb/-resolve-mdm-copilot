@@ -336,41 +336,56 @@ def render_tier(tier):
             else:
                 gen_key = f"gen_rationale_{tier}_{c['pair_id']}"
                 if st.button("🤖 Generate AI Rationale", key=gen_key, type="secondary"):
-                    with st.spinner("Generating rationale..."):
-                        try:
-                            from src.resolve.phi_safety.redactor import redact_text, restore_text, log_llm_call
-                            from src.resolve.rag.rationale import generate_rationale, format_pair
+                    status = st.empty()
+                    status.info("⏳ Generating AI rationale — please wait, this takes ~10 seconds...")
+                    try:
+                        from src.resolve.phi_safety.redactor import redact_text, restore_text, log_llm_call
+                        from src.resolve.rag.rationale import generate_rationale, format_pair
 
-                            rec_a = {"name": f"{c['first_a']} {c['last_a']}", "dob": str(c.get("dob_a", "")),
-                                     "ssn": c.get("ssn_a", ""), "city": c.get("city_a", ""),
-                                     "state": c.get("state_a", ""), "source": c.get("src_a", "")}
-                            rec_b = {"name": f"{c['first_b']} {c['last_b']}", "dob": str(c.get("dob_b", "")),
-                                     "ssn": c.get("ssn_b", ""), "city": c.get("city_b", ""),
-                                     "state": c.get("state_b", ""), "source": c.get("src_b", "")}
-                            scores = {"name": c["score_name"], "dob": c["score_dob"],
-                                      "ssn": c["score_ssn"], "address": c["score_address"],
-                                      "composite": c["composite_score"]}
+                        rec_a = {"name": f"{c['first_a']} {c['last_a']}", "dob": str(c.get("dob_a", "")),
+                                 "ssn": c.get("ssn_a", ""), "city": c.get("city_a", ""),
+                                 "state": c.get("state_a", ""), "source": c.get("src_a", "")}
+                        rec_b = {"name": f"{c['first_b']} {c['last_b']}", "dob": str(c.get("dob_b", "")),
+                                 "ssn": c.get("ssn_b", ""), "city": c.get("city_b", ""),
+                                 "state": c.get("state_b", ""), "source": c.get("src_b", "")}
+                        scores = {"name": c["score_name"], "dob": c["score_dob"],
+                                  "ssn": c["score_ssn"], "address": c["score_address"],
+                                  "composite": c["composite_score"]}
 
-                            raw_input = format_pair(rec_a, rec_b, scores)
-                            redacted_input, mapping = redact_text(raw_input)
-                            result = generate_rationale(rec_a, rec_b, scores, redacted_input=redacted_input)
-                            rationale_json = result.model_dump()
-                            rationale_json["recommendation"] = rationale_json["recommendation"].value
+                        raw_input = format_pair(rec_a, rec_b, scores)
+                        redacted_input, mapping = redact_text(raw_input)
+                        result = generate_rationale(rec_a, rec_b, scores, redacted_input=redacted_input)
+                        rationale_json = result.model_dump()
+                        rationale_json["recommendation"] = rationale_json["recommendation"].value
 
-                            # Cache to DB
-                            conn = get_connection()
-                            cur = conn.cursor()
-                            cur.execute(
-                                "UPDATE staging.decision_candidates SET cached_rationale = %s WHERE pair_id = %s",
-                                (json.dumps(rationale_json), c["pair_id"]),
-                            )
-                            conn.commit()
-                            cur.close()
+                        # Cache to DB
+                        conn = get_connection()
+                        cur = conn.cursor()
+                        cur.execute(
+                            "UPDATE staging.decision_candidates SET cached_rationale = %s WHERE pair_id = %s",
+                            (json.dumps(rationale_json), c["pair_id"]),
+                        )
+                        conn.commit()
+                        cur.close()
 
-                            log_llm_call("claude-sonnet-4-6", len(redacted_input), len(str(rationale_json)))
-                            st.rerun()
-                        except Exception as e:
-                            st.error(f"Rationale generation failed: {e}")
+                        log_llm_call("claude-sonnet-4-6", len(redacted_input), len(str(rationale_json)))
+
+                        # Show result inline immediately (user stays on this tab)
+                        status.empty()
+                        rec_label = rationale_json["recommendation"]
+                        conf_val = rationale_json["confidence"]
+                        rec_icon = {"SAME": "🟢", "DISTINCT": "🔴", "ESCALATE": "🟡"}.get(rec_label, "⚪")
+                        st.success(f"✅ Rationale generated for pair #{c['pair_id']}")
+                        st.markdown(f"**AI Rationale:** {rec_icon} **{rec_label}** · Confidence: **{conf_val:.0%}**")
+                        st.caption(rationale_json.get("rationale_text", ""))
+                        if rationale_json.get("evidence"):
+                            with st.popover("📋 Evidence details"):
+                                for ev in rationale_json["evidence"]:
+                                    st.markdown(f"- {ev}")
+
+                    except Exception as e:
+                        status.empty()
+                        st.error(f"Rationale generation failed: {e}")
 
             btn_cols = st.columns([1, 1, 1, 4])
             for idx, (label, btn_type) in enumerate(buttons):
