@@ -25,10 +25,21 @@ def _get_voyage():
     return _vo
 
 
-def embed_query(query: str) -> list[float]:
-    """Embed a query string using Voyage AI."""
+def embed_query(query: str, max_retries: int = 3) -> list[float]:
+    """Embed a query string using Voyage AI with retry for rate limits."""
+    import time
+
     vo = _get_voyage()
-    return vo.embed([query], model=VOYAGE_MODEL, input_type="query").embeddings[0]
+    for attempt in range(max_retries):
+        try:
+            return vo.embed([query], model=VOYAGE_MODEL, input_type="query").embeddings[0]
+        except Exception as e:
+            if attempt < max_retries - 1 and ("rate" in str(e).lower() or "429" in str(e)):
+                wait = 21 * (attempt + 1)
+                print(f"  ⏳ Rate limited, waiting {wait}s (attempt {attempt + 1}/{max_retries})...")
+                time.sleep(wait)
+            else:
+                raise
 
 
 def hybrid_search(

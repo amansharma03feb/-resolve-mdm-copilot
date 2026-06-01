@@ -24,7 +24,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+import psycopg2
 from src.resolve.rag.retriever import hybrid_search, rerank_results, embed_query
+
+DB_URL = os.getenv("DATABASE_URL")
 
 # Test queries with expected top-action (what we'd expect the most relevant note to be)
 TEST_QUERIES = [
@@ -59,16 +62,42 @@ def main():
         print(f"\n[{i:2d}/10] {query}")
         print(f"        Expected: {expected}")
 
-        # 1. Hybrid only (top-5)
+        # Rate limit: Voyage AI free tier = 3 RPM
+        if i > 1:
+            print("        ⏳ Waiting 21s (Voyage AI rate limit)...")
+            time.sleep(21)
+
+        # Embed once, reuse for both searches
+        query_vec = embed_query(query)
+        conn = psycopg2.connect(DB_URL)
+        cur = conn.cursor()
+
+        # 1. Hybrid only (top-5) — use raw SQL with pre-computed embedding
         t0 = time.time()
-        hybrid_5 = hybrid_search(query, top_k=5)
+        cur.execute(
+            "SELECT note_id, reviewer, action, confidence, note, vector_score, text_score, hybrid_score "
+            "FROM staging.hybrid_search_notes(%s::vector, %s, %s)",
+            (str(query_vec), query, 5),
+        )
+        hybrid_5 = [{"note_id": r[0], "reviewer": r[1], "action": r[2], "confidence": float(r[3]) if r[3] else 0,
+                      "note": r[4], "vector_score": r[5], "text_score": r[6], "hybrid_score": r[7]}
+                     for r in cur.fetchall()]
         hybrid_time = time.time() - t0
         hybrid_top_action = hybrid_5[0]["action"] if hybrid_5 else "NONE"
         hybrid_correct = hybrid_top_action == expected
 
-        # 2. Hybrid (top-50) → Rerank → top-5
+        # 2. Hybrid (top-50) → Rerank → top-5 — reuse same embedding
         t0 = time.time()
-        hybrid_50 = hybrid_search(query, top_k=50)
+        cur.execute(
+            "SELECT note_id, reviewer, action, confidence, note, vector_score, text_score, hybrid_score "
+            "FROM staging.hybrid_search_notes(%s::vector, %s, %s)",
+            (str(query_vec), query, 50),
+        )
+        hybrid_50 = [{"note_id": r[0], "reviewer": r[1], "action": r[2], "confidence": float(r[3]) if r[3] else 0,
+                       "note": r[4], "vector_score": r[5], "text_score": r[6], "hybrid_score": r[7]}
+                      for r in cur.fetchall()]
+        cur.close()
+        conn.close()
         reranked = rerank_results(query, hybrid_50, top_k=5)
         rerank_time = time.time() - t0
         rerank_top_action = reranked[0]["action"] if reranked else "NONE"

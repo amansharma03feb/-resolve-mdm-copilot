@@ -12,6 +12,7 @@ Prerequisites:
 import os
 import sys
 import json
+import time
 from datetime import datetime
 
 import psycopg2
@@ -87,6 +88,11 @@ def main():
         print(f"\n{'─' * 70}")
         print(f"Query {i}: {query}")
         print(f"{'─' * 70}")
+
+        # Rate limit: Voyage AI free tier = 3 RPM → wait 21s between calls
+        if i > 1:
+            print("  ⏳ Waiting 21s (Voyage AI free-tier rate limit)...")
+            time.sleep(21)
 
         # Embed the query
         query_vec = vo.embed([query], model=MODEL, input_type="query").embeddings[0]
