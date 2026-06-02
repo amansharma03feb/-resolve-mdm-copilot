@@ -532,6 +532,7 @@ with tab_anomaly:
 
         if vol_rows:
             vol_df = pd.DataFrame(vol_rows, columns=["day", "volume"])
+            vol_df["volume"] = vol_df["volume"].astype(float)
             vol_mean = vol_df["volume"].mean()
             vol_std = vol_df["volume"].std()
             vol_latest = vol_df.iloc[0]["volume"] if len(vol_df) > 0 else 0
@@ -545,6 +546,7 @@ with tab_anomaly:
                 ORDER BY hours_stale DESC
             """)
             fresh_df = pd.DataFrame(fresh_rows, columns=["source", "latest", "hours_stale"])
+            fresh_df["hours_stale"] = fresh_df["hours_stale"].astype(float)
 
             # Confidence drift (7-day moving avg)
             conf_rows, _ = run_query("""
@@ -556,6 +558,7 @@ with tab_anomaly:
                 LIMIT 30
             """)
             conf_df = pd.DataFrame(conf_rows, columns=["day", "avg_score"])
+            conf_df["avg_score"] = conf_df["avg_score"].astype(float)
             conf_mean = conf_df["avg_score"].mean() if len(conf_df) > 0 else 0
             conf_std = conf_df["avg_score"].std() if len(conf_df) > 0 else 0
 
@@ -570,6 +573,8 @@ with tab_anomaly:
                 GROUP BY source_system
             """)
             comp_df = pd.DataFrame(comp_rows, columns=["source", "total", "dob_pct", "ssn_pct", "zip_pct"])
+            for col in ["total", "dob_pct", "ssn_pct", "zip_pct"]:
+                comp_df[col] = comp_df[col].astype(float)
 
             # KPI tiles
             k1, k2, k3, k4 = st.columns(4)

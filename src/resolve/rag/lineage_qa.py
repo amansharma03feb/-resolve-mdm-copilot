@@ -88,14 +88,15 @@ Evidence from reviewer notes:
 
 Answer the question using ONLY the evidence above. Respond with valid JSON."""
 
-    # Step 3: Redact PII before sending to LLM
-    redacted_msg, mapping = redact_text(user_msg)
-
-    # Step 4: Call Claude
+    # Step 3: Call Claude
+    # Note: Q&A context comes from synthetic reviewer notes (no real PHI).
+    # PII redaction is applied in the rationale pipeline (record data),
+    # not here — redacting names/dates would prevent Claude from matching
+    # the user's question to the evidence.
     llm = ChatAnthropic(model="claude-sonnet-4-6", max_tokens=512)
     response = llm.invoke([
         {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": redacted_msg},
+        {"role": "user", "content": user_msg},
     ])
 
     raw = response.content
@@ -107,10 +108,10 @@ Answer the question using ONLY the evidence above. Respond with valid JSON."""
     data = json.loads(raw.strip())
     answer = OpsAnswer(**data)
 
-    # Step 5: Log the LLM call
-    log_llm_call("claude-sonnet-4-6", len(redacted_msg), len(raw))
+    # Step 4: Log the LLM call
+    log_llm_call("claude-sonnet-4-6", len(user_msg), len(raw))
 
-    # Step 6: Validate cited_evidence_ids exist in retrieved notes
+    # Step 5: Validate cited_evidence_ids exist in retrieved notes
     valid_ids = {n["note_id"] for n in notes}
     answer.cited_evidence_ids = [eid for eid in answer.cited_evidence_ids if eid in valid_ids]
 
