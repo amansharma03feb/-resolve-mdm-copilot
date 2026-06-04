@@ -3,7 +3,8 @@
 ![pgvector](https://img.shields.io/badge/pgvector-vector%20search-336791)
 ![LangChain](https://img.shields.io/badge/LangChain-orchestration-1C3C3C?logo=langchain&logoColor=white)
 ![Anthropic](https://img.shields.io/badge/Claude-Anthropic-CC785C?logo=anthropic&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
+![License](https://img.shields.io/badge/License-Proprietary-red)
+![Cohere](https://img.shields.io/badge/Cohere-reranking-purple)
 
 # Verify — AI Copilot for Operational Decision Review
 
@@ -11,7 +12,7 @@ An open-source AI copilot that helps operations teams review, explain, and audit
 
 **Demo dataset:** Synthea synthetic healthcare records (realistic complexity: multiple identifiers, slight variations, ambiguous matches — the kinds of patterns ops teams face in finance, government services, insurance, and any regulated industry).
 
-**Status:** Building in public over ~90 days. Foundations complete. Streamlit dashboard live.
+**Status:** Core features complete. AI rationale, Ops Q&A, Anomaly Watcher, and evaluation harness all live. PRD v0.7.
 
 ---
 

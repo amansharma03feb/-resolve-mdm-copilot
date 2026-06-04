@@ -1,6 +1,7 @@
 # Verify — Project Progress
 
 A plain-English log of what got built, when, and why it matters.
+**Total commits:** 40+ | **Total build cost:** Under $15 | **PRD version:** v0.7
 
 ---
 
