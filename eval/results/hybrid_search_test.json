@@ -1,0 +1,210 @@
+{
+  "run_at": "2026-06-01T19:16:24.673858",
+  "queries": [
+    {
+      "query": "SSN digits are transposed but name and DOB match exactly",
+      "vector_ids": [
+        78,
+        12,
+        24,
+        80,
+        77
+      ],
+      "hybrid_ids": [
+        78,
+        12,
+        24,
+        80,
+        77
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.507105079504999
+    },
+    {
+      "query": "maiden name change after marriage \u2014 different last names same person",
+      "vector_ids": [
+        32,
+        5,
+        22,
+        70,
+        14
+      ],
+      "hybrid_ids": [
+        32,
+        5,
+        22,
+        70,
+        14
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.443970257635455
+    },
+    {
+      "query": "father and son with same name, different DOBs",
+      "vector_ids": [
+        41,
+        51,
+        50,
+        42,
+        85
+      ],
+      "hybrid_ids": [
+        41,
+        51,
+        50,
+        42,
+        85
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.44645373959702
+    },
+    {
+      "query": "pharmacy system uses informal first names like Bill instead of William",
+      "vector_ids": [
+        9,
+        38,
+        7,
+        23,
+        17
+      ],
+      "hybrid_ids": [
+        9,
+        38,
+        7,
+        23,
+        17
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.532242755062668
+    },
+    {
+      "query": "member moved from Texas to Florida with address change",
+      "vector_ids": [
+        4,
+        40,
+        15,
+        22,
+        11
+      ],
+      "hybrid_ids": [
+        4,
+        40,
+        15,
+        22,
+        11
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.463747645765403
+    },
+    {
+      "query": "hyphenated last name split across enrollment and claims systems",
+      "vector_ids": [
+        8,
+        38,
+        13,
+        21,
+        3
+      ],
+      "hybrid_ids": [
+        8,
+        38,
+        13,
+        21,
+        3
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.515094943631878
+    },
+    {
+      "query": "auto-merge approved with 99% confidence",
+      "vector_ids": [
+        3,
+        10,
+        4,
+        2,
+        34
+      ],
+      "hybrid_ids": [
+        3,
+        10,
+        4,
+        2,
+        34
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.389297878742221
+    },
+    {
+      "query": "ZIP+4 difference between PO Box and street address",
+      "vector_ids": [
+        25,
+        3,
+        12,
+        90,
+        31
+      ],
+      "hybrid_ids": [
+        25,
+        3,
+        12,
+        90,
+        31
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.381327360868454
+    },
+    {
+      "query": "legacy enrollment system migration caused accent in last name",
+      "vector_ids": [
+        17,
+        8,
+        108,
+        38,
+        2
+      ],
+      "hybrid_ids": [
+        17,
+        8,
+        108,
+        38,
+        2
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.432324603109773
+    },
+    {
+      "query": "dual coverage during employer transition period",
+      "vector_ids": [
+        10,
+        18,
+        30,
+        100,
+        109
+      ],
+      "hybrid_ids": [
+        10,
+        18,
+        30,
+        100,
+        109
+      ],
+      "overlap": 5,
+      "hybrid_only_count": 0,
+      "top_hybrid_score": 0.433627977848231
+    }
+  ],
+  "summary": {
+    "total_queries": 10,
+    "avg_overlap": 5.0,
+    "total_hybrid_only": 0
+  }
+}

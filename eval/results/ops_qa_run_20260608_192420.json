@@ -1,0 +1,502 @@
+{
+  "run_id": "20260608_192420",
+  "run_at": "2026-06-08T19:24:20.844706+00:00",
+  "chain": "ops_qa",
+  "metrics": {
+    "total_questions": 20,
+    "valid_questions": 19,
+    "errors": 1,
+    "avg_confidence": 0.7589,
+    "avg_citations_per_answer": 2.63,
+    "avg_notes_retrieved": 5.0,
+    "context_precision": 1.0,
+    "avg_latency_s": 28.464,
+    "category_metrics": {
+      "decision_rationale": {
+        "count": 9,
+        "avg_confidence": 0.8,
+        "avg_citations": 2.11
+      },
+      "policy": {
+        "count": 4,
+        "avg_confidence": 0.77,
+        "avg_citations": 4.5
+      },
+      "compliance": {
+        "count": 4,
+        "avg_confidence": 0.7175,
+        "avg_citations": 1.75
+      },
+      "reviewer_pattern": {
+        "count": 2,
+        "avg_confidence": 0.635,
+        "avg_citations": 3.0
+      }
+    }
+  },
+  "question_results": [
+    {
+      "question_id": "OQ001",
+      "question": "Why did the team mark records with transposed SSN digits as MERGE?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "Transposed SSN digits (e.g. 5519 vs 5591) combined with matching DOB and name were treated as data entry errors. However, most such cases were ESCALATED for further review rather than directly merged.",
+      "predicted_answer": "The evidence shows one case of transposed digits leading to a MERGE decision, but it involved an address number rather than SSN digits. In note_id=12, reviewer Maria Rodriguez merged records where the address number had transposed digits ('1234 Oak St' vs '1243 Oak St'). The MERGE was justified because SSN last4, DOB, and name all matched, and the ZIP code confirmed it was a data entry error. No notes in the provided evidence specifically describe transposed SSN digits as the reason for a MERGE decision.",
+      "predicted_confidence": 0.35,
+      "cited_note_ids": [
+        12
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "MERGE",
+        "MERGE",
+        "MERGE",
+        "MERGE",
+        "MERGE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 10.096,
+      "error": null
+    },
+    {
+      "question_id": "OQ002",
+      "question": "What is the standard approach for maiden name changes?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "Maiden name changes are handled as MERGE when SSN last4 and DOB match and the maiden name field confirms the prior surname. The maiden name is preserved in the golden record.",
+      "predicted_answer": "Based on the evidence, the standard approach for maiden name changes is to MERGE records when strong identifiers confirm the same person. Key steps include: (1) verifying identity via matching DOB and SSN (note_id=5, note_id=32), (2) preserving the maiden name in the golden record or maiden name field (note_id=32), and (3) retaining the most current information (e.g., married name as primary if more recent). In note_id=5, 'Jennifer Adams' and 'Jennifer Brooks' were merged after DOB, SSN last4, and maiden name field all aligned. In note_id=32, the old record's maiden name was preserved alongside the married name after DOB and SSN confirmation. However, if multiple name changes exist across several records without a clear history, escalation may be required before merging (note_id=93).",
+      "predicted_confidence": 0.82,
+      "cited_note_ids": [
+        5,
+        32,
+        93
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "MERGE",
+        "MERGE",
+        "ESCALATE",
+        "MERGE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 8.577,
+      "error": null
+    },
+    {
+      "question_id": "OQ003",
+      "question": "When should a case be escalated rather than merged or separated?",
+      "category": "policy",
+      "expected_answer_summary": "Cases are escalated when there is ambiguous evidence \u2014 e.g. matching SSN but mismatched DOB, missing identifiers, legal/compliance holds (42 CFR Part 2, OFAC), or conflicting signals that prevent confident resolution.",
+      "predicted_answer": "Based on reviewer notes, a case should be escalated (rather than merged or separated) in these situations: 1) Insufficient evidence to decide confidently \u2014 e.g., DOB/address match but names differ significantly and SSN is missing (note_id=85). 2) Complex identity history requiring reconstruction before action \u2014 e.g., multiple legal name changes across years (note_id=93). 3) Potential fraud or eligibility issues requiring specialist review \u2014 e.g., concurrent Medicaid and commercial coverage (note_id=100). 4) Conflicting vital status \u2014 e.g., one record marked deceased while the other has recent claims, suggesting death record error or identity misuse (note_id=86). 5) Legal/regulatory restrictions preventing merge \u2014 e.g., 42 CFR Part 2 substance abuse records requiring written patient consent before any merge action (note_id=104). In summary: escalate when confidence is too low to act, when specialized review is needed, or when legal constraints block immediate resolution.",
+      "predicted_confidence": 0.97,
+      "cited_note_ids": [
+        85,
+        93,
+        100,
+        86,
+        104
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 8.856,
+      "error": null
+    },
+    {
+      "question_id": "OQ004",
+      "question": "How does the team handle pharmacy system records with informal names?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "Pharmacy systems often use informal names (Bill vs William, Liam vs William). The team merges these when SSN last4, DOB, and address all match, applying the common nickname mapping.",
+      "predicted_answer": "Based on the evidence, the team handles pharmacy system records with informal names by applying a 'common nickname mapping' approach. In note_id=9, reviewer David Chen merged a duplicate from a pharmacy feed where the first name appeared as 'Bill' in one record and 'William' in another. He noted that 'common nickname mapping applies' and that 'pharmacy system uses informal names.' The merge was confirmed using matching SSN last4, DOB, and address as corroborating identifiers, resulting in a MERGE action with 0.94 confidence. This suggests the team treats common nickname/formal name variations from pharmacy feeds as a known pattern, using other identifiers to confirm identity before merging.",
+      "predicted_confidence": 0.92,
+      "cited_note_ids": [
+        9
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "MERGE",
+        "MERGE",
+        "MERGE",
+        "ESCALATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 71.47,
+      "error": null
+    },
+    {
+      "question_id": "OQ005",
+      "question": "What happened with the father-son pairs that had the same name?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "Father-son pairs (e.g. James Wilson vs James Wilson Jr.) were SEPARATED despite sharing an address. Different DOBs and different SSN last4 confirmed distinct individuals.",
+      "predicted_answer": "Two father-son pairs with the same name were reviewed and both were SEPARATED. In note_id=41, Maria Rodriguez separated 'James Wilson' vs 'James Wilson Jr.' \u2014 they shared the same address but had different DOBs (1962 vs 1988) and different SSN last4 digits, confirming a father-son pair rather than a duplicate record. Note_id=73 (James Liu) also involved a same-name situation with DOBs 30 years apart and differing SSNs, though that case involved an adopted child and a biological relative in another state rather than a strict father-son pair. Both were determined not to be duplicates based on DOB and SSN differences.",
+      "predicted_confidence": 0.82,
+      "cited_note_ids": [
+        41,
+        73
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "SEPARATE",
+        "SEPARATE",
+        "SEPARATE",
+        "SEPARATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 7.483,
+      "error": null
+    },
+    {
+      "question_id": "OQ006",
+      "question": "How are cases involving 42 CFR Part 2 (substance abuse) records handled?",
+      "category": "compliance",
+      "expected_answer_summary": "Records covered by 42 CFR Part 2 cannot be merged even if the match looks strong. Written patient consent is required before any merge. Cases are escalated with consent forms sent to the provider.",
+      "predicted_answer": "Cases involving 42 CFR Part 2 (substance abuse/mental health) records are escalated rather than merged, even when match confidence is reasonably high. Per note_id=104, Maria Rodriguez escalated a case with substance abuse treatment records, noting that 42 CFR Part 2 restrictions prohibit merging without written patient consent \u2014 a consent form was sent to the provider. Similarly, per note_id=91, James Liu escalated a case involving a mental health facility record, stating that enhanced privacy protections under 42 CFR Part 2 apply and that explicit patient consent is required before merging, regardless of match strength. The consistent pattern is: (1) flag the 42 CFR Part 2 restriction, (2) escalate the case, and (3) obtain written/explicit patient consent before any merge can proceed.",
+      "predicted_confidence": 0.95,
+      "cited_note_ids": [
+        104,
+        91
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "SEPARATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 7.585,
+      "error": null
+    },
+    {
+      "question_id": "OQ007",
+      "question": "What is the process for handling deceased member records that show recent activity?",
+      "category": "compliance",
+      "expected_answer_summary": "When a record is marked deceased but another shows recent claims, the case is escalated as it could indicate a death record error or identity misuse. These are flagged for investigation.",
+      "predicted_answer": "Based on the evidence, deceased member records showing recent activity are escalated rather than merged or resolved unilaterally. In note_id=86, David Chen escalated a case where one record was marked deceased and the other had recent claims, noting it could be a death record error or identity misuse. In note_id=102, David Chen again escalated a similar situation involving an organ donor registry match, flagging it as urgent priority due to implications for organ allocation. Both cases had matching SSN and DOB. The evidence does not specify a detailed step-by-step resolution process beyond escalation, suggesting these cases require specialized review rather than standard processing. Confidence is moderate as the notes confirm escalation is the required action but do not describe the full downstream resolution workflow.",
+      "predicted_confidence": 0.65,
+      "cited_note_ids": [
+        86,
+        102
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "MERGE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 72.033,
+      "error": null
+    },
+    {
+      "question_id": "OQ008",
+      "question": "How does the team handle common name collisions like John Smith?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "Common name matches alone are insufficient. Cases like 'John Smith' vs 'John Smith' with different DOBs, different SSN last4, and different addresses are SEPARATED as coincidental name matches.",
+      "predicted_answer": "Based on the evidence, common name collisions like 'John Smith' are handled by examining additional identifiers beyond the name. In note_id=46, David Chen separated two 'John Smith' records with low confidence (0.25) because, despite the identical names, the DOBs differed by 5 years, SSN last4 digits differed, and addresses differed \u2014 leading to a SEPARATE decision. Similarly, in note_id=53, James Liu separated two 'Lee' records (confidence 0.11) because DOB, SSN, address, and state all differed, concluding the name match was coincidental. The pattern shows that when a common name matches but key identifiers (SSN, DOB) diverge, the team defaults to SEPARATE. The team does not merge solely on name similarity for common names.",
+      "predicted_confidence": 0.88,
+      "cited_note_ids": [
+        46,
+        53
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "SEPARATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "SEPARATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 8.737,
+      "error": null
+    },
+    {
+      "question_id": "OQ009",
+      "question": "What are the rules for address-only matches at institutional addresses?",
+      "category": "policy",
+      "expected_answer_summary": "Institutional addresses (nursing homes, prisons, group homes, shelters, dormitories) are unreliable for matching. Multiple individuals share these addresses. Cases matched only by address at such facilities are separated or have the address added to an exclusion list.",
+      "predicted_answer": "Based on reviewer notes, address-only matches at institutional addresses are consistently treated as insufficient grounds for merging records. Reviewers have separated records in multiple institutional contexts: university dormitories (note_id=66), prisons (note_id=72), group homes (note_id=43), and military base housing (note_id=67). The pattern is clear: when an address match occurs at an institutional address where multiple unrelated individuals reside, and other PII fields (name, DOB, SSN) differ, reviewers separate the records. Address-based matching is explicitly noted as 'unreliable for institutional addresses' (note_id=66). All four institutional cases were separated with very low confidence scores (0.12\u20130.22), reflecting that reviewers were highly certain these were distinct individuals despite the shared address.",
+      "predicted_confidence": 0.91,
+      "cited_note_ids": [
+        66,
+        72,
+        43,
+        67
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "SEPARATE",
+        "SEPARATE",
+        "SEPARATE",
+        "SEPARATE",
+        "SEPARATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 8.204,
+      "error": null
+    },
+    {
+      "question_id": "OQ010",
+      "question": "How are Korean or Asian name order differences handled?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "Name order differences (e.g. 'Kim Park' vs 'Park Kim' for Korean names) are treated as MERGE when DOB, SSN, and address all confirm the same person. The team recognizes Eastern vs Western name ordering conventions.",
+      "predicted_answer": "Based on the evidence, Korean/Asian name order differences are handled by merging records when corroborating identifiers confirm the same person. In note_id=19, James Liu merged 'Kim Park' vs 'Park Kim' (a Korean name order reversal between systems) with confidence 0.94, because DOB, SSN, and address all confirmed the same individual. However, name order/romanization alone is not sufficient to merge: in note_id=65, 'Park' vs 'Pak' (Korean surname romanization variants) led to a SEPARATE decision because DOBs differed by 20 years, SSNs differed, and addresses were in different states. The pattern is clear: name order or romanization differences are acknowledged as legitimate variation, but the final decision depends heavily on whether supporting identifiers (DOB, SSN, address) align.",
+      "predicted_confidence": 0.92,
+      "cited_note_ids": [
+        19,
+        65
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "MERGE",
+        "SEPARATE",
+        "SEPARATE",
+        "SEPARATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 71.316,
+      "error": null
+    },
+    {
+      "question_id": "OQ011",
+      "question": "What is the team's approach to DOB discrepancies of one digit?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "Single-digit DOB discrepancies (e.g. March vs May, or day off by 1) are treated as likely data entry errors when SSN and name match. The earlier/more reliable source system's DOB is kept. Usually merged with documentation.",
+      "predicted_answer": "The evidence shows a mixed approach to single-digit DOB discrepancies. In note_id=24, Maria Rodriguez merged records where the DOB was off by one day (03/14 vs 03/15), treating it as a likely data entry error when SSN, name, and address all matched \u2014 keeping the earlier DOB per source system reliability. However, in note_id=80, Maria Rodriguez escalated a case where the DOB month differed by one digit (March vs May, i.e., 3 vs 5), despite strong SSN and name matches, indicating that even single-digit month discrepancies may warrant escalation when the magnitude of difference is larger. Note_id=89 shows Sarah Thompson escalating a 10-year DOB gap (digit transposition in year). Overall, the team appears to merge when a one-digit discrepancy is very minor (one day) with strong corroborating matches, but escalates when the discrepancy affects the month or year, even if it appears to be a data entry error.",
+      "predicted_confidence": 0.72,
+      "cited_note_ids": [
+        24,
+        80,
+        89
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "MERGE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 9.19,
+      "error": null
+    },
+    {
+      "question_id": "OQ012",
+      "question": "How are twin records handled?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "Twins at the same address with the same DOB and last name are SEPARATED based on different first names and different SSN last4. Birth records may be used for confirmation.",
+      "predicted_answer": "Based on the evidence, twin records are handled by separation. In note_id=48, reviewer Sarah Thompson took a SEPARATE action (confidence=0.30) when records shared the same DOB, last name, and address but had different first names and different SSN last 4 digits. Twin siblings were confirmed via birth records, leading to the separation decision. This is the only direct example of twin record handling in the provided evidence.",
+      "predicted_confidence": 0.82,
+      "cited_note_ids": [
+        48
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "MERGE",
+        "MERGE",
+        "ESCALATE",
+        "SEPARATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 11.872,
+      "error": null
+    },
+    {
+      "question_id": "OQ013",
+      "question": "What is the policy for members with concurrent Medicaid and commercial coverage?",
+      "category": "compliance",
+      "expected_answer_summary": "Concurrent Medicaid and commercial coverage may indicate eligibility fraud. These cases are ESCALATED and cannot be merged until the eligibility team reviews the situation.",
+      "predicted_answer": "Based on the available evidence, there is no explicit documented policy for members with concurrent Medicaid and commercial coverage. However, the evidence shows that reviewer Maria Rodriguez escalated such a case (note_id=100), citing a potential eligibility fraud concern and stating records cannot be merged until the eligibility team reviews. This suggests an escalation protocol exists for concurrent Medicaid/commercial coverage cases. Note that note_id=109 addresses a different scenario (Medicare + Medicaid dual-eligible), which also requires escalation due to a specific CMS reconciliation process. No formal policy document or explicit policy statement is present in the provided evidence.",
+      "predicted_confidence": 0.35,
+      "cited_note_ids": [
+        100,
+        109
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "MERGE",
+        "MERGE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 71.035,
+      "error": null
+    },
+    {
+      "question_id": "OQ014",
+      "question": "How does David Chen typically handle name spelling variants?",
+      "category": "reviewer_pattern",
+      "expected_answer_summary": "David Chen merges records with common spelling variants (Garcia/Garci-a, Elisabeth/Elizabeth, OBrien/O'Brien) when SSN last4, DOB, and address all match. He notes the variant source in his rationale.",
+      "predicted_answer": "Based on the available evidence, David Chen handled a name spelling variant in note_id=17, where he merged records for 'Elisabeth' vs 'Elizabeth'. He identified this as a common spelling variant and confirmed the merge based on matching DOB, SSN, and address, noting the inconsistency was caused by freetext name entry in the enrollment system. His confidence was high (0.93). Only one note from David Chen is available, so broader patterns cannot be established from this evidence alone.",
+      "predicted_confidence": 0.55,
+      "cited_note_ids": [
+        17
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "SEPARATE",
+        "MERGE",
+        "SEPARATE",
+        "MERGE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 7.9,
+      "error": null
+    },
+    {
+      "question_id": "OQ015",
+      "question": "What is the auto-merge approval threshold?",
+      "category": "policy",
+      "expected_answer_summary": "Auto-merge is approved for cases with exact matches on SSN last4, DOB, first name, and last name where the only difference is non-PII fields like address formatting or source system IDs. Confidence is typically 0.95+.",
+      "predicted_answer": "The provided evidence does not explicitly state a numeric auto-merge approval threshold. However, based on the two auto-merge cases in the notes, auto-merges were approved at confidence scores of 0.98 (note_id=3) and 0.99 (note_id=10), both requiring exact or near-exact matches on SSN last4, DOB, first name, and last name. Cases with confidence scores of 0.52\u20130.64 were escalated rather than auto-merged (note_ids=85, 93, 99). This suggests the threshold is likely very high (near 0.98+), but the exact threshold value is not documented in the available evidence.",
+      "predicted_confidence": 0.45,
+      "cited_note_ids": [
+        3,
+        10,
+        85,
+        93,
+        99
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "MERGE",
+        "MERGE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 7.917,
+      "error": null
+    },
+    {
+      "question_id": "OQ016",
+      "question": "How are veteran records with VA and civilian data handled?",
+      "category": "compliance",
+      "expected_answer_summary": "VA records with service-connected conditions must not be merged into civilian records without proper flags. These are escalated even when SSN, name, and DOB all match, due to special handling requirements.",
+      "predicted_answer": "Based on the evidence, veteran records with both VA and civilian data are escalated rather than merged. In note_id=96, reviewer Maria Rodriguez escalated such a case despite strong matching criteria (SSN, name, and DOB all matched). The reason for escalation was that the VA record contained service-connected conditions that must not be merged into the civilian record without proper flags in place. Standard merge procedures are considered insufficient for this scenario, requiring special handling to preserve the integrity of VA-specific medical data.",
+      "predicted_confidence": 0.92,
+      "cited_note_ids": [
+        96
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "ESCALATE",
+        "MERGE",
+        "MERGE",
+        "MERGE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 70.997,
+      "error": null
+    },
+    {
+      "question_id": "OQ017",
+      "question": "What patterns indicate a false positive from the blocking algorithm?",
+      "category": "policy",
+      "expected_answer_summary": "False positives commonly arise from: common name matches (Smith, Johnson), institutional address matches, soundex grouping too-similar surnames (Peterson/Pederson), and nickname mappings that are too aggressive (Chris\u2192Christina).",
+      "predicted_answer": "1 validation error for OpsAnswer\nanswer_text\n  String should have at most 1000 characters [type=string_too_long, input_value=\"Based on reviewer notes,... fields are unreliable.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_too_long",
+      "predicted_confidence": 0,
+      "cited_note_ids": [],
+      "notes_retrieved": 0,
+      "retrieved_actions": [],
+      "context_has_relevant_action": null,
+      "latency_s": 8.985,
+      "error": "1 validation error for OpsAnswer\nanswer_text\n  String should have at most 1000 characters [type=string_too_long, input_value=\"Based on reviewer notes,... fields are unreliable.\", input_type=str]\n    For further information visit https://errors.pydantic.dev/2.13/v/string_too_long"
+    },
+    {
+      "question_id": "OQ018",
+      "question": "How are records handled when SSN is NULL in one system?",
+      "category": "decision_rationale",
+      "expected_answer_summary": "When SSN is NULL in one record, the case is ESCALATED because the team cannot confirm or deny a match without SSN. The source system is requested to backfill the missing SSN data.",
+      "predicted_answer": "When SSN is NULL in one or both records, reviewers consistently escalate rather than making a merge or separation decision. Evidence shows three main patterns: (1) Note 78 (David Chen): name and DOB match but SSN is NULL in one record \u2014 escalated with a request to backfill SSN data from the source system. (2) Note 85 (Sarah Thompson): SSN is NULL in both records with a name discrepancy \u2014 escalated because there is insufficient evidence to act confidently. (3) Note 94 (David Chen): a tribal health system record uses a tribal ID instead of SSN \u2014 escalated for cross-system identity resolution. (4) Note 105 (Sarah Thompson): a school health record lacks SSN \u2014 escalated pending parent verification. In all cases, NULL SSN triggers an ESCALATE action, and reviewers explicitly note the missing identifier as a key blocker to resolution.",
+      "predicted_confidence": 0.95,
+      "cited_note_ids": [
+        78,
+        85,
+        94,
+        105
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 8.217,
+      "error": null
+    },
+    {
+      "question_id": "OQ019",
+      "question": "Which reviewer handles the most sensitive cases like identity theft or fraud?",
+      "category": "reviewer_pattern",
+      "expected_answer_summary": "David Chen handles potential identity theft and fraud scenarios, as well as OFAC screening flags. Maria Rodriguez handles compliance-sensitive cases including witness protection and eligibility reviews.",
+      "predicted_answer": "Based on the available evidence, David Chen handles the most identity theft and fraud cases. He escalated two clear identity theft/fraud scenarios: note_id=82 (same SSN used by two people with different names/DOBs) and note_id=106 (same SSN at two addresses simultaneously, security team notified). Maria Rodriguez also handles sensitive cases \u2014 note_id=100 involves possible eligibility fraud, and note_id=84 involves a sensitive transgender name-change case. James Liu (note_id=83) flagged a possible identity sharing scenario. David Chen is the most focused on identity theft specifically, with both his cases explicitly flagged as potential identity theft and one triggering a security team notification.",
+      "predicted_confidence": 0.72,
+      "cited_note_ids": [
+        82,
+        106,
+        100,
+        84,
+        83
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE",
+        "ESCALATE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 71.206,
+      "error": null
+    },
+    {
+      "question_id": "OQ020",
+      "question": "What is the survivorship rule for conflicting addresses after a merge?",
+      "category": "policy",
+      "expected_answer_summary": "When merging records with different addresses, the most recent address is kept as the primary address. For interstate moves, the old state enrollment is closed and the new state enrollment becomes primary.",
+      "predicted_answer": "Based on the available evidence, the survivorship rule for conflicting addresses after a merge is to keep the most recent address. Note_id=20 (Maria Rodriguez) explicitly states: 'Address differs \u2014 old record is previous residence. Kept most recent address.' Note_id=18 (Sarah Thompson) similarly handled a slightly different address format for a re-enrolled member, updating the golden record with current coverage info. Note_id=25 (David Chen) handled a ZIP code discrepancy attributed to a USPS boundary reassignment, implying the more accurate/current address data is preferred. Note_id=31 shows that formatting differences in addresses (e.g., 'St.' vs 'Saint') are treated as equivalent and not true conflicts. The consistent pattern is: keep the most recent or most accurate address in the merged golden record.",
+      "predicted_confidence": 0.75,
+      "cited_note_ids": [
+        20,
+        18,
+        25,
+        31
+      ],
+      "notes_retrieved": 5,
+      "retrieved_actions": [
+        "MERGE",
+        "MERGE",
+        "MERGE",
+        "MERGE",
+        "MERGE"
+      ],
+      "context_has_relevant_action": true,
+      "latency_s": 8.127,
+      "error": null
+    }
+  ]
+}

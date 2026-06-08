@@ -1,0 +1,274 @@
+{
+  "run_at": "2026-06-01T19:23:05.725278",
+  "cohere_available": true,
+  "results": [
+    {
+      "query": "SSN digits are transposed but name and DOB match exactly",
+      "expected_action": "MERGE",
+      "hybrid_top_action": "ESCALATE",
+      "hybrid_correct": false,
+      "hybrid_time_s": 0.203,
+      "hybrid_top_ids": [
+        78,
+        12,
+        24,
+        80,
+        77
+      ],
+      "rerank_top_action": "ESCALATE",
+      "rerank_correct": false,
+      "rerank_time_s": 0.094,
+      "rerank_top_ids": [
+        78,
+        12,
+        24,
+        80,
+        77
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "maiden name change after marriage \u2014 different last names same person",
+      "expected_action": "MERGE",
+      "hybrid_top_action": "MERGE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.158,
+      "hybrid_top_ids": [
+        32,
+        5,
+        22,
+        70,
+        14
+      ],
+      "rerank_top_action": "MERGE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.078,
+      "rerank_top_ids": [
+        32,
+        5,
+        22,
+        70,
+        14
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "father and son with same name, different DOBs",
+      "expected_action": "SEPARATE",
+      "hybrid_top_action": "SEPARATE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.173,
+      "hybrid_top_ids": [
+        41,
+        51,
+        50,
+        42,
+        85
+      ],
+      "rerank_top_action": "SEPARATE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.091,
+      "rerank_top_ids": [
+        41,
+        51,
+        50,
+        42,
+        85
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "pharmacy system uses informal first names like Bill instead of William",
+      "expected_action": "MERGE",
+      "hybrid_top_action": "MERGE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.164,
+      "hybrid_top_ids": [
+        9,
+        38,
+        7,
+        23,
+        17
+      ],
+      "rerank_top_action": "MERGE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.081,
+      "rerank_top_ids": [
+        9,
+        38,
+        7,
+        23,
+        17
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "member moved from Texas to Florida with address change",
+      "expected_action": "MERGE",
+      "hybrid_top_action": "MERGE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.267,
+      "hybrid_top_ids": [
+        4,
+        40,
+        15,
+        22,
+        11
+      ],
+      "rerank_top_action": "MERGE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.136,
+      "rerank_top_ids": [
+        4,
+        40,
+        15,
+        22,
+        11
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "hyphenated last name split across enrollment and claims systems",
+      "expected_action": "MERGE",
+      "hybrid_top_action": "MERGE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.207,
+      "hybrid_top_ids": [
+        8,
+        38,
+        13,
+        21,
+        3
+      ],
+      "rerank_top_action": "MERGE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.078,
+      "rerank_top_ids": [
+        8,
+        38,
+        13,
+        21,
+        3
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "auto-merge approved with 99% confidence",
+      "expected_action": "MERGE",
+      "hybrid_top_action": "MERGE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.166,
+      "hybrid_top_ids": [
+        3,
+        10,
+        4,
+        2,
+        34
+      ],
+      "rerank_top_action": "MERGE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.108,
+      "rerank_top_ids": [
+        3,
+        10,
+        4,
+        2,
+        34
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "ZIP+4 difference between PO Box and street address",
+      "expected_action": "MERGE",
+      "hybrid_top_action": "MERGE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.271,
+      "hybrid_top_ids": [
+        25,
+        3,
+        12,
+        90,
+        31
+      ],
+      "rerank_top_action": "MERGE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.131,
+      "rerank_top_ids": [
+        25,
+        3,
+        12,
+        90,
+        31
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "should we escalate when SSN last4 conflicts but all else matches",
+      "expected_action": "ESCALATE",
+      "hybrid_top_action": "ESCALATE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.192,
+      "hybrid_top_ids": [
+        77,
+        78,
+        88,
+        82,
+        106
+      ],
+      "rerank_top_action": "ESCALATE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.09,
+      "rerank_top_ids": [
+        77,
+        78,
+        88,
+        82,
+        106
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    },
+    {
+      "query": "dual coverage during employer transition period",
+      "expected_action": "MERGE",
+      "hybrid_top_action": "MERGE",
+      "hybrid_correct": true,
+      "hybrid_time_s": 0.16,
+      "hybrid_top_ids": [
+        10,
+        18,
+        30,
+        100,
+        109
+      ],
+      "rerank_top_action": "MERGE",
+      "rerank_correct": true,
+      "rerank_time_s": 0.08,
+      "rerank_top_ids": [
+        10,
+        18,
+        30,
+        100,
+        109
+      ],
+      "rerank_changed_top": false,
+      "rerank_score": null
+    }
+  ],
+  "summary": {
+    "hybrid_precision": 0.9,
+    "rerank_precision": 0.9,
+    "precision_delta": 0.0,
+    "top_changed_count": 0,
+    "avg_hybrid_time_s": 0.196,
+    "avg_rerank_time_s": 0.097
+  }
+}

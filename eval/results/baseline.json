@@ -1,0 +1,233 @@
+{
+  "baseline_run_id": "20260601_195712",
+  "baseline_run_at": "2026-06-01T19:57:12.154045+00:00",
+  "chain": "rationale",
+  "metrics": {
+    "total_cases": 100,
+    "valid_cases": 100,
+    "errors": 0,
+    "decision_agreement": 0.88,
+    "avg_confidence_correct": 0.8776,
+    "avg_confidence_incorrect": 0.5183,
+    "auto_resolve_candidates": 21,
+    "auto_resolve_precision": 1.0,
+    "tier_accuracy": {
+      "SAME": 0.9714,
+      "DISTINCT": 0.6,
+      "ESCALATE": 0.8
+    },
+    "avg_evidence_citations": 6.05,
+    "avg_latency_s": 7.079
+  },
+  "failure_summary": {
+    "total_failures": 12,
+    "pattern_counts": {
+      "over_cautious_distinct": 8,
+      "nickname_redaction_miss": 2,
+      "ambiguity_misjudgment": 2
+    },
+    "worst_10": [
+      {
+        "case_id": "GZ019",
+        "gold_decision": "ESCALATE",
+        "predicted_decision": "SAME",
+        "predicted_confidence": 0.91,
+        "predicted_evidence": [
+          "SSN last4 exact match: both records share '3901' (score: 1.000)",
+          "Address similarity: 0.950 \u2014 City/State both in FL with near-identical address components",
+          "Name similarity: 0.720 \u2014 moderate match, likely variation in formatting or data entry across systems",
+          "ORG_2 match: 1.000 \u2014 identical organizational attribute",
+          "ORG_1 match: 1.000 \u2014 identical organizational attribute",
+          "Source systems differ: pharmacy_2023 vs claims_2024 \u2014 expected divergence across systems",
+          "Composite score: 0.918 \u2014 well above typical SAME threshold"
+        ],
+        "predicted_rationale": "Strong evidence supports SAME entity. SSN last4 is an exact match, address similarity is 0.950 (both FL), and both ORG fields match perfectly. Name similarity of 0.720 is the only minor discrepancy, likely due to formatting differences across pharmacy and claims systems. Composite score of 0.918 provides high confidence these records refer to the same individual.",
+        "gold_rationale": "Joseph/Jose could be nickname OR different person (cultural variant). DOB/SSN/address match but name ambiguity warrants review.",
+        "decision_correct": false,
+        "latency_s": 6.413,
+        "error": null
+      },
+      {
+        "case_id": "GZ027",
+        "gold_decision": "ESCALATE",
+        "predicted_decision": "DISTINCT",
+        "predicted_confidence": 0.82,
+        "predicted_evidence": [
+          "Name: ALEXANDER HILL vs ALEXANDER HILL \u2014 exact match (similarity 1.000)",
+          "SSN last4: 9178 (Record A) vs 3456 (Record B) \u2014 no match, critical identifier conflict",
+          "DOB: [DATE_2] (Record A) vs [DATE_1] (Record B) \u2014 dates differ, potential age/identity conflict",
+          "City/State: [GPE_2]/[PERSON_2] vs [GPE_1]/[PERSON_1] \u2014 different locations, address similarity 0.650",
+          "Source system: enrollment_2023 (Record A) vs pharmacy_2024 (Record B) \u2014 different systems and years",
+          "ORG_1 match: 0.000 \u2014 no organizational overlap between records"
+        ],
+        "predicted_rationale": "Despite an identical name, the SSN last4 digits differ (9178 vs 3456), which is a strong indicator of distinct individuals. DOB values also differ, compounding the mismatch. Different cities, states, and source systems further support separation. The composite score of 0.663 is below a reliable SAME threshold. Name collision likely represents two different people named Alexander Hill.",
+        "gold_rationale": "Name/DOB match but SSN differs and cities are 100+ miles apart. Different person likely.",
+        "decision_correct": false,
+        "latency_s": 6.521,
+        "error": null
+      },
+      {
+        "case_id": "HC006",
+        "gold_decision": "SAME",
+        "predicted_decision": "ESCALATE",
+        "predicted_confidence": 0.62,
+        "predicted_evidence": [
+          "SSN last4: both records share 8103 \u2014 exact match (score 1.000)",
+          "State: both records list CO \u2014 exact match",
+          "Address similarity: 0.950 \u2014 cities differ slightly but high overlap",
+          "Name similarity: 0.812 \u2014 first name differs ([ORG_4] vs BILL); last name DAVIS matches",
+          "DOB: [DATE_2] vs [DATE_1] \u2014 dates differ and cannot be confirmed as same",
+          "Source systems differ: [ORG_3] vs enrollment_2024"
+        ],
+        "predicted_rationale": "SSN last4 and state match strongly, and address similarity is very high. However, the first names differ ([ORG_4] vs BILL) and DOBs appear to differ. The name discrepancy could indicate a nickname or data entry issue, but the DOB mismatch is a meaningful flag. Evidence is strong for sameness but not conclusive \u2014 human review recommended.",
+        "gold_rationale": "William/Bill standard nickname. DOB and SSN exact. Same address.",
+        "decision_correct": false,
+        "latency_s": 6.483,
+        "error": null
+      },
+      {
+        "case_id": "HC023",
+        "gold_decision": "SAME",
+        "predicted_decision": "ESCALATE",
+        "predicted_confidence": 0.62,
+        "predicted_evidence": [
+          "SSN last4: exact match (2067 = 2067)",
+          "City/State: exact match (Memphis, TN = Memphis, TN)",
+          "Address similarity: 0.950 (high overlap)",
+          "Name similarity: 0.808 \u2014 Record A name is 'STEPHANIE HALL'; Record B name field is redacted/masked as '[PERSON_1]: [DATE_1]', preventing direct name confirmation",
+          "DOB: Record A has [DATE_2]; Record B DOB is embedded in masked name field '[PERSON_1]: [DATE_1]' \u2014 direct DOB comparison not possible",
+          "Source systems differ: pharmacy_2023 vs claims_2024",
+          "Composite score: 0.940 (strong overall signal)"
+        ],
+        "predicted_rationale": "SSN last4, city/state, and address strongly suggest the same individual. However, Record B's name and DOB fields are masked/redacted, preventing direct verification of these key identifiers. The high composite score (0.940) is encouraging, but the inability to confirm name and DOB match due to PII masking warrants human review before confirming SAME.",
+        "gold_rationale": "Stephanie/Steph nickname. All identifiers match.",
+        "decision_correct": false,
+        "latency_s": 7.561,
+        "error": null
+      },
+      {
+        "case_id": "LC001",
+        "gold_decision": "DISTINCT",
+        "predicted_decision": "ESCALATE",
+        "predicted_confidence": 0.45,
+        "predicted_evidence": [
+          "Name similarity: 1.000 \u2014 names [PERSON_3] and [PERSON_1] score as identical match",
+          "SSN last4: Record A = 7842, Record B = 3156 \u2014 complete mismatch (0.000)",
+          "DOB: Record A = [DATE_2]-14, Record B = [DATE_1] \u2014 dates differ, no overlap confirmed",
+          "City/State: Record A = [GPE_3]/[GPE_2], Record B = [GPE_1]/FL \u2014 address similarity 0.000, different locations",
+          "Source system: Record B sourced from pharmacy_2024; Record A source not specified",
+          "Composite score: 0.250 \u2014 low overall match driven solely by name"
+        ],
+        "predicted_rationale": "Name is an exact match, but all other key identifiers conflict: SSN last4 differs (7842 vs 3156), DOB does not align, and city/state shows zero overlap. The name match alone is insufficient to confirm same entity, especially with hard-identifier mismatches. Cannot confidently rule SAME or DISTINCT without further investigation.",
+        "gold_rationale": "Same name only. DOB, SSN, and address all completely different. Different people.",
+        "decision_correct": false,
+        "latency_s": 6.501,
+        "error": null
+      },
+      {
+        "case_id": "LC017",
+        "gold_decision": "DISTINCT",
+        "predicted_decision": "ESCALATE",
+        "predicted_confidence": 0.45,
+        "predicted_evidence": [
+          "Name similarity is 1.000 (exact match on redacted name tokens [PERSON_3]/[PERSON_2] and date tokens [DATE_2]/[DATE_1] \u2014 underlying values unknown due to redaction)",
+          "SSN last4 mismatch: Record A = 3345, Record B = 2456 (no overlap)",
+          "City/State mismatch: Record A = Albuquerque/[ORG_3], Record B = [GPE_1]/[PERSON_1] (address similarity = 0.000)",
+          "Source system mismatch: Record A = pharmacy_2023, Record B = claims_2024",
+          "Composite score = 0.250, driven entirely by name similarity with all other attributes diverging"
+        ],
+        "predicted_rationale": "Name similarity scores 1.0, but all other attributes conflict: SSN last4 digits differ (3345 vs 2456), city/state do not match, and source systems differ. The SSN mismatch is a strong indicator of distinct entities, but heavy redaction prevents confirming underlying name/DOB values. Escalate for human review to resolve SSN discrepancy before deciding.",
+        "gold_rationale": "Same name. 9-year DOB gap. No matching identifiers.",
+        "decision_correct": false,
+        "latency_s": 6.6,
+        "error": null
+      },
+      {
+        "case_id": "LC018",
+        "gold_decision": "DISTINCT",
+        "predicted_decision": "ESCALATE",
+        "predicted_confidence": 0.45,
+        "predicted_evidence": [
+          "Name similarity: 1.000 \u2014 names are identical across both records",
+          "SSN last4: Record A = 9178, Record B = 1578 \u2014 do not match",
+          "City/State: Record A = [GPE_2]/[PERSON_2], Record B = [GPE_1]/[ORG_3] \u2014 no address overlap (similarity 0.000)",
+          "Source system: Record A = enrollment_2023, Record B = pharmacy_2024 \u2014 different systems and time periods",
+          "Composite score: 0.250 \u2014 low overall match despite perfect name similarity"
+        ],
+        "predicted_rationale": "Names match perfectly, but SSN last4 digits differ (9178 vs 1578), locations do not overlap, and records come from different source systems. The name match could indicate the same person with data entry errors, or a coincidental name collision. The SSN mismatch is a significant conflict. Insufficient evidence to confirm SAME or DISTINCT \u2014 requires human review.",
+        "gold_rationale": "Same name. 11-year DOB gap. All identifiers differ.",
+        "decision_correct": false,
+        "latency_s": 5.851,
+        "error": null
+      },
+      {
+        "case_id": "LC003",
+        "gold_decision": "DISTINCT",
+        "predicted_decision": "ESCALATE",
+        "predicted_confidence": 0.41,
+        "predicted_evidence": [
+          "Name similarity is 1.000 \u2014 names are identical across both records",
+          "SSN last4: Record A = 4521, Record B = 8103 \u2014 complete mismatch, strong indicator of distinct individuals or data entry error",
+          "City/State: Record A = [GPE_2], [PERSON_2]; Record B = [GPE_1], CO \u2014 address similarity 0.000, no geographic overlap",
+          "Date field: Record A = [DATE_2], Record B = [DATE_1] \u2014 dates differ, potentially different DOBs",
+          "Source system: Record A = pharmacy_2023, Record B = enrollment_2024 \u2014 different source systems and time periods",
+          "Composite score: 0.250 \u2014 low overall match driven entirely by name similarity"
+        ],
+        "predicted_rationale": "Names match perfectly, but SSN last4 digits conflict (4521 vs 8103), addresses show zero overlap, and dates differ. The name match alone is insufficient to confirm identity given hard mismatches on SSN and location. Could be a common name shared by two different individuals, or a data quality issue. Human review is warranted before any merge decision.",
+        "gold_rationale": "Common name match only. DOB 13 years apart. Different SSN and city/state.",
+        "decision_correct": false,
+        "latency_s": 6.766,
+        "error": null
+      },
+      {
+        "case_id": "LC005",
+        "gold_decision": "DISTINCT",
+        "predicted_decision": "ESCALATE",
+        "predicted_confidence": 0.38,
+        "predicted_evidence": [
+          "Name similarity score is 1.000, indicating identical or near-identical names between Record A ([PERSON_3]) and Record B ([PERSON_2])",
+          "SSN last4 mismatch: Record A shows 7156, Record B shows 1456 \u2014 these differ",
+          "Date fields differ: Record A has [DATE_2], Record B has [DATE_1]",
+          "City/State mismatch: Record A is [GPE_2], GA; Record B is [GPE_1] \u2014 no overlap",
+          "Source system differs: Record A is [ORG_4]; Record B references claims_2024",
+          "Composite score is low at 0.250, driven entirely by name match with zero overlap on all other attributes"
+        ],
+        "predicted_rationale": "Name similarity is perfect (1.000), but every other attribute conflicts: SSN last4 (7156 vs 1456), dates, city/state, and source system all differ with 0.000 match scores. The high name similarity may reflect a common name or data masking artifact. The combination of strong name match but complete divergence elsewhere is ambiguous and warrants human review before a determination is made.",
+        "gold_rationale": "Common name. 26-year DOB gap. Different SSN, different state. Clearly different people.",
+        "decision_correct": false,
+        "latency_s": 7.3,
+        "error": null
+      },
+      {
+        "case_id": "LC008",
+        "gold_decision": "DISTINCT",
+        "predicted_decision": "ESCALATE",
+        "predicted_confidence": 0.38,
+        "predicted_evidence": [
+          "Name similarity is 1.000, indicating identical or near-identical names across records",
+          "SSN last4 differ: Record A = 2145, Record B = 4290 \u2014 a strong indicator of distinct individuals",
+          "City/State do not match: Record A is [GPE_2]/[ORG_3], Record B is [GPE_1]/[PERSON_1] \u2014 address similarity 0.000",
+          "Source systems differ: Record A from enrollment_2023, Record B from claims_2024",
+          "Composite score is low at 0.250, driven by zero matches on SSN, ORG, and address fields"
+        ],
+        "predicted_rationale": "Name similarity is perfect (1.000), but SSN last4 digits conflict (2145 vs 4290), locations differ entirely, and source systems are distinct. The name match alone could reflect a common name or data entry pattern. The SSN mismatch is a strong signal of distinct entities, but redacted fields prevent certainty. Human review is warranted before a final determination.",
+        "gold_rationale": "Same name. 13-year DOB gap. All identifiers differ.",
+        "decision_correct": false,
+        "latency_s": 6.435,
+        "error": null
+      }
+    ]
+  },
+  "targets": {
+    "faithfulness": 0.85,
+    "recommendation_agreement": 0.85,
+    "hallucination_rate_max": 0.05
+  },
+  "current_vs_target": {
+    "recommendation_agreement": {
+      "current": 0.88,
+      "target": 0.85,
+      "met": true
+    }
+  }
+}

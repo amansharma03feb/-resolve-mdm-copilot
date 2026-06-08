@@ -1,0 +1,1894 @@
+{
+  "run_id": "20260608_192002",
+  "run_at": "2026-06-08T19:20:02.761908+00:00",
+  "metrics": {
+    "total_cases": 100,
+    "valid_cases": 100,
+    "errors": 0,
+    "decision_agreement": 0.93,
+    "avg_confidence_correct": 0.9141,
+    "avg_confidence_incorrect": 0.7886,
+    "auto_resolve_candidates": 18,
+    "auto_resolve_precision": 1.0,
+    "tier_accuracy": {
+      "SAME": 0.9571,
+      "DISTINCT": 1.0,
+      "ESCALATE": 0.6
+    },
+    "avg_evidence_citations": 5.71,
+    "avg_latency_s": 6.334
+  },
+  "case_results": [
+    {
+      "case_id": "HC001",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "SSN last4 exact match (1.000): both records share last4 = 7842",
+        "DOB match score 1.000: date-of-birth fields align exactly (both share '-14' day component visible in redacted values)",
+        "Address similarity 0.950: city/state overlap is high, consistent with same geographic location",
+        "Name similarity 0.823: above the 0.75 threshold; difference likely reflects nickname or informal variant (e.g., redacted full name vs. 'BOB SMITH')",
+        "Composite score 0.943: well above SAME threshold"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (scores 1.000). Address similarity of 0.950 confirms same geographic area. Name similarity of 0.823 falls within the nickname/abbreviation range (\u22650.75 with strong hard-identifier alignment). No conflicting signals detected. All evidence points to the same individual across both records.",
+      "gold_rationale": "Name is nickname variant (Robert/Bob). DOB exact match. SSN exact match. Same city/state. High confidence same person.",
+      "decision_correct": true,
+      "latency_s": 8.288,
+      "error": null
+    },
+    {
+      "case_id": "HC002",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match on MARIA GARCIA",
+        "SSN last4 exact match \u2014 both records show last4: 3156",
+        "DOB match score 1.000 \u2014 birth dates align exactly (note: DOB values are redacted/masked, but numeric score confirms match)",
+        "Address similarity 1.000 \u2014 city/state overlap is identical",
+        "Composite score 1.000 \u2014 all weighted dimensions align perfectly"
+      ],
+      "predicted_rationale": "All hard identifiers align with perfect scores: SSN last4 match (3156), DOB match (1.000), address match (1.000), and exact name match. Composite score is 1.000 with no conflicting signals. The redacted DOB and address fields introduce minor uncertainty, but numeric scores confirm full agreement. These records represent the same individual.",
+      "gold_rationale": "All fields exact match across two source systems. Definitive same person.",
+      "decision_correct": true,
+      "latency_s": 6.007,
+      "error": null
+    },
+    {
+      "case_id": "HC003",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "SSN last4: both records share 9201 \u2014 exact match",
+        "DOB match score: 1.000 \u2014 birth dates align exactly",
+        "Address similarity: 1.000 \u2014 identical city/state across records",
+        "Composite score: 1.000 \u2014 all contributing signals at maximum agreement"
+      ],
+      "predicted_rationale": "Every available matching signal is at maximum score. SSN last4, DOB, name, and address all match exactly across both records. The records originate from different source systems (enrollment_2023 vs. claims_2024), which explains the dual presence. No conflicting signals detected. High confidence these represent the same individual.",
+      "gold_rationale": "Perfect match on all attributes. Different source systems confirm same entity.",
+      "decision_correct": true,
+      "latency_s": 5.231,
+      "error": null
+    },
+    {
+      "case_id": "HC004",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 6734 ([ORG_2] score 1.000)",
+        "DOB match score 1.000 ([ORG_1] match) \u2014 birth dates align exactly",
+        "Address similarity 0.950 \u2014 records share the same geographic area despite possible city/state label differences",
+        "Name similarity 0.845 \u2014 falls within the nickname/variant range (0.70\u20130.85+) consistent with abbreviation or alternate name form",
+        "Composite score 0.949 \u2014 strong overall alignment across all weighted attributes"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and address similarity is 0.950. Name similarity of 0.845 is consistent with a nickname or name variant (e.g., shortened form or middle-name usage). All hard identifiers confirm the same individual across a pharmacy_2023 and claims_2024 source record. No conflicting signals detected.",
+      "gold_rationale": "Jennifer/Jenny is standard nickname. DOB and SSN exact. Same location.",
+      "decision_correct": true,
+      "latency_s": 6.73,
+      "error": null
+    },
+    {
+      "case_id": "HC005",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "SSN last4: both records show 4521 \u2014 exact match",
+        "ORG_2 match: 1.000 \u2014 hard identifier match (likely DOB or similar)",
+        "ORG_1 match: 1.000 \u2014 hard identifier match (likely SSN or similar)",
+        "Address similarity: 0.850 \u2014 meets or exceeds the 0.85 overlap threshold; one record shows redacted city/state ([GPE_1], [PERSON_3]) and the other shows Scottsdale, [PERSON_1], which may represent the same metro area or a relocation",
+        "Composite score: 0.963 \u2014 well above typical SAME threshold",
+        "Source systems differ (enrollment_2023 vs. claims_2024) \u2014 consistent with same individual appearing in two different workflows over time"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 matches, both ORG-labeled identifier scores are 1.000, name is identical, and address similarity meets the 0.85 threshold. The differing source systems (enrollment vs. claims) and date contexts suggest the same person across two encounters. No conflicting signals detected. Recommend merging as SAME person.",
+      "gold_rationale": "Name/DOB/SSN exact. Phoenix and Scottsdale are adjacent cities in same metro area.",
+      "decision_correct": true,
+      "latency_s": 7.829,
+      "error": null
+    },
+    {
+      "case_id": "HC006",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.95,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 8103 (score 1.000)",
+        "DOB match score 1.000 \u2014 birth dates align exactly",
+        "Address similarity 0.950 \u2014 both records in CO, high geographic overlap",
+        "Name similarity 0.812 \u2014 consistent with nickname or abbreviation variant (e.g., [ORG_4]/BILL could be a formal/informal name pair)",
+        "Composite score 0.941 \u2014 well above SAME threshold",
+        "Both records located in Colorado, supporting same individual across two source systems"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and address similarity is 0.950 within Colorado. Name similarity of 0.812 falls within the expected range for a nickname or abbreviated variant (e.g., a formal first name vs. 'BILL'). All hard identifiers confirm the same person across two sources. No conflicting signals detected.",
+      "gold_rationale": "William/Bill standard nickname. DOB and SSN exact. Same address.",
+      "decision_correct": true,
+      "latency_s": 6.363,
+      "error": null
+    },
+    {
+      "case_id": "HC007",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "SSN last4 match: both records share last4 = 5467 (score 1.000)",
+        "DOB match: identifier score 1.000 \u2014 exact date of birth alignment",
+        "Address similarity: 1.000 \u2014 same city/state (WA), indicating same geographic location",
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "Composite score: 1.000 \u2014 all contributing signals at maximum alignment",
+        "Both records located in Washington State, consistent geography",
+        "Sources differ (pharmacy_2023 vs redacted org source) \u2014 consistent with same person appearing in multiple systems"
+      ],
+      "predicted_rationale": "All hard identifiers align perfectly: SSN last4, DOB, name, and address each score 1.000, yielding a composite of 1.000. No conflicting signals are present. The only difference is the source system, which is expected for a single patient appearing in both pharmacy and clinical records. High confidence these are the same individual.",
+      "gold_rationale": "All fields identical. Two claims in same year from different systems.",
+      "decision_correct": true,
+      "latency_s": 6.294,
+      "error": null
+    },
+    {
+      "case_id": "HC008",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "SSN last4: both records show 2389 \u2014 exact match",
+        "DOB match score: 1.000 \u2014 exact date of birth match",
+        "Address similarity: 1.000 \u2014 both records show Portland, OR, exact overlap",
+        "Composite score: 1.000 \u2014 all attributes align perfectly",
+        "Sources differ (enrollment_2024 vs pharmacy_2024) \u2014 consistent with same individual appearing in multiple systems"
+      ],
+      "predicted_rationale": "All hard identifiers match exactly: SSN last4 (2389), DOB (1.000), name (1.000), and address (1.000) in Portland, OR. Composite score is a perfect 1.000. The only difference is source system (enrollment vs pharmacy), which is expected for the same patient across care settings. No conflicting signals present.",
+      "gold_rationale": "Perfect match. Same year, different source systems.",
+      "decision_correct": true,
+      "latency_s": 5.554,
+      "error": null
+    },
+    {
+      "case_id": "HC009",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.94,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 7156 \u2014 score 1.000",
+        "DOB exact match: score 1.000 \u2014 identical birth dates across both records",
+        "Address similarity 0.950 \u2014 both located in Georgia, high geographic overlap",
+        "Name similarity 0.790 \u2014 'PATRICIA' vs 'PAT' is a well-known nickname/abbreviation variant, consistent with same person",
+        "Composite score 0.935 \u2014 well above SAME decision threshold"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and address similarity is 0.950 (same state, high overlap). Name similarity of 0.790 is fully explained by the Patricia/Pat nickname relationship \u2014 a standard given-name abbreviation. All hard identifiers confirm a single individual. No conflicting signals are present.",
+      "gold_rationale": "Patricia/Pat nickname variant. All other fields match exactly.",
+      "decision_correct": true,
+      "latency_s": 5.731,
+      "error": null
+    },
+    {
+      "case_id": "HC010",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "SSN last4 exact match (1.000) \u2014 both records share last4 6890",
+        "DOB match score 1.000 \u2014 birth dates align exactly",
+        "Address similarity 0.950 \u2014 same metro area, consistent with same individual across two data sources",
+        "Name similarity 0.778 \u2014 within the acceptable nickname/variant range given strong hard-identifier alignment",
+        "Composite score 0.932 \u2014 well above SAME threshold",
+        "Records sourced from different encounter types (pharmacy_2022 vs claims_2024) \u2014 temporal gap expected in healthcare MDM"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and address similarity is 0.950. Name similarity of 0.778 is consistent with a nickname, abbreviation, or data-entry variant (e.g. 'Richard' vs 'Rick'). All hard identifiers confirm the same individual across two separate source systems. No conflicting signals detected. Recommend merging as SAME.",
+      "gold_rationale": "Richard/Dick nickname. DOB and SSN exact. Same location.",
+      "decision_correct": true,
+      "latency_s": 5.912,
+      "error": null
+    },
+    {
+      "case_id": "HC011",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 3478 ([ORG_2] match score 1.000)",
+        "DOB match score 1.000 ([ORG_1] match) \u2014 birth dates align exactly",
+        "Address similarity 0.950 \u2014 records share the same or closely overlapping geographic area",
+        "Name similarity 0.810 \u2014 within the nickname/variant range (0.70\u20130.85), consistent with an abbreviated or alternate name form",
+        "Composite score 0.940 \u2014 well above threshold for SAME determination",
+        "Source system difference (enrollment_2023 vs claims_2024) is expected for the same patient appearing in multiple workflows"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly, and address similarity is 0.950. Name similarity of 0.810 falls within the accepted nickname/variant range and does not constitute a conflicting signal given the strength of the hard identifiers. The records appear across different source systems (enrollment vs. claims), which is a common data origin pattern for the same individual. All evidence points to the same person.",
+      "gold_rationale": "Susan/Sue nickname. All identifiers match.",
+      "decision_correct": true,
+      "latency_s": 7.079,
+      "error": null
+    },
+    {
+      "case_id": "HC012",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.95,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'THOMAS WHITE'",
+        "SSN last4: 1.000 \u2014 both records share last4 '9012'",
+        "DOB match score: 1.000 \u2014 birth dates align exactly (redacted fields confirmed via score)",
+        "Address similarity: 0.870 \u2014 above the 0.85 threshold indicating strong geographic overlap",
+        "Composite score: 0.968 \u2014 well above typical SAME threshold"
+      ],
+      "predicted_rationale": "All hard identifiers confirm the same person: SSN last4 and DOB both score 1.000 (exact match), name is identical, and address similarity of 0.870 exceeds the 0.85 overlap threshold. Composite score of 0.968 is high confidence. No conflicting signals detected. Recommend merging as SAME individual.",
+      "gold_rationale": "Name/DOB/SSN exact. Minneapolis and St Paul are twin cities, same metro.",
+      "decision_correct": true,
+      "latency_s": 5.842,
+      "error": null
+    },
+    {
+      "case_id": "HC013",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'MARGARET HARRIS'",
+        "SSN last4 match: 1.000 \u2014 both records share last4 5634",
+        "DOB match score: 1.000 \u2014 birth date fields align (both redacted but scores confirm match)",
+        "Address similarity: 1.000 \u2014 city/state fields align within TN (both redacted but scores confirm match)",
+        "Composite score: 1.000 \u2014 all contributing factors at maximum agreement",
+        "Both records located in Tennessee \u2014 geographic consistency"
+      ],
+      "predicted_rationale": "All hard and soft identifiers align perfectly: exact name match, SSN last4 5634 shared, DOB match score 1.000, and address similarity 1.000 within TN. Composite score is 1.000. Records span two sources (pharmacy_2023 and enrollment_2024), consistent with the same individual appearing in multiple systems over time. No conflicting signals detected.",
+      "gold_rationale": "Perfect match across all attributes and systems.",
+      "decision_correct": true,
+      "latency_s": 6.074,
+      "error": null
+    },
+    {
+      "case_id": "HC014",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 2145 ([ORG_1] score 1.000)",
+        "DOB exact match: [ORG_2] score 1.000 \u2014 birth dates align perfectly",
+        "Address similarity 0.950 \u2014 records are in the same geographic area",
+        "Name similarity 0.835 \u2014 within the nickname/variant range (0.70\u20130.85+), consistent with an abbreviation or alternate rendering of the same person's name",
+        "Composite score 0.946 \u2014 strongly above SAME threshold"
+      ],
+      "predicted_rationale": "All hard identifiers confirm the same individual: SSN last4 and DOB both match exactly (scores 1.000), and address similarity is 0.950. Name similarity of 0.835 falls within the expected range for a nickname or name variant and does not constitute a conflicting signal. No discrepant identifiers are present. Recommend merging as SAME person.",
+      "gold_rationale": "Christopher/Chris nickname. DOB/SSN exact. Same location.",
+      "decision_correct": true,
+      "latency_s": 5.95,
+      "error": null
+    },
+    {
+      "case_id": "HC015",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'SARAH THOMPSON'",
+        "SSN last4: 1.000 \u2014 both records share last4 '8567'",
+        "DOB match score: 1.000 \u2014 birth dates align exactly (specific dates redacted but scores confirm match)",
+        "Address similarity: 1.000 \u2014 city/state overlap is exact",
+        "Composite score: 1.000 \u2014 all weighted attributes confirm alignment",
+        "Records originate from different source systems (enrollment_2023 vs claims_2024), consistent with same patient appearing across multiple workflows"
+      ],
+      "predicted_rationale": "All hard identifiers \u2014 SSN last4, DOB, and address \u2014 score 1.000, as does name similarity. No conflicting signals detected. The records appear in different source systems (enrollment vs. claims) and different time periods, which is expected for the same patient. High confidence this is a single individual. No escalation warranted.",
+      "gold_rationale": "All fields identical across systems.",
+      "decision_correct": true,
+      "latency_s": 6.092,
+      "error": null
+    },
+    {
+      "case_id": "HC016",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "SSN last4 exact match (1.000) \u2014 both records share last4 4290",
+        "DOB match score 1.000 \u2014 birth dates align exactly (fields redacted but score confirms match)",
+        "Address similarity 0.950 \u2014 strong geographic overlap between [GPE_2] and [GPE_1]",
+        "Name similarity 0.825 \u2014 consistent with nickname, abbreviation, or data-entry variant of same individual",
+        "Composite score 0.944 \u2014 well above SAME threshold"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (1.000). Address similarity of 0.950 confirms geographic consistency. Name similarity of 0.825 falls within the nickname/variant range per decision rules (\u22650.75 with matching hard identifiers). Records span different source systems (pharmacy_2023 vs enrollment_2024), which commonly produces minor name discrepancies. All evidence points to the same individual.",
+      "gold_rationale": "Daniel/Dan nickname. All identifiers match.",
+      "decision_correct": true,
+      "latency_s": 6.528,
+      "error": null
+    },
+    {
+      "case_id": "HC017",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.98,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact name match (JACKSON surname, identical first name token)",
+        "SSN last4 exact match \u2014 both records share last4 7823",
+        "DOB match score 1.000 \u2014 birth dates are identical",
+        "Address similarity 1.000 \u2014 same city/state (OH), full geographic overlap",
+        "Composite score 1.000 \u2014 all matching dimensions align perfectly",
+        "Both records located in Ohio \u2014 consistent state/region"
+      ],
+      "predicted_rationale": "All hard identifiers align perfectly: SSN last4, DOB, name, and address all score 1.000. The two records originate from different sources ([ORG_4] vs. pharmacy_2024), which is a common cause of duplicate entries in healthcare MDM. No conflicting signals exist. This is a clear duplicate representing the same individual.",
+      "gold_rationale": "Perfect match. 2-year gap between records, same person.",
+      "decision_correct": true,
+      "latency_s": 6.135,
+      "error": null
+    },
+    {
+      "case_id": "HC018",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match (1.000) \u2014 both records share last4: 1456",
+        "DOB exact match (1.000) \u2014 hard identifier confirms same individual",
+        "Address similarity 0.950 \u2014 same metro area or minor formatting difference",
+        "Name similarity 0.830 \u2014 within nickname/variant range per decision boundary (\u2265 0.75 with matching hard identifiers)",
+        "Composite score 0.945 \u2014 well above SAME threshold",
+        "Records sourced from different systems (enrollment_2024 vs claims_2024) \u2014 expected minor discrepancies"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and address similarity is 0.950. Name similarity of 0.830 meets the \u2265 0.75 threshold for nickname/variant treatment when hard identifiers align strongly. The two records originate from different source systems (enrollment vs claims), which explains minor data discrepancies. All evidence consistently points to the same individual.",
+      "gold_rationale": "Matthew/Matt nickname. All identifiers match.",
+      "decision_correct": true,
+      "latency_s": 5.891,
+      "error": null
+    },
+    {
+      "case_id": "HC019",
+      "gold_decision": "SAME",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.65,
+      "predicted_evidence": [
+        "SSN last4 exact match (1.000) \u2014 strong hard identifier alignment",
+        "DOB/date match score 1.000 \u2014 birth date aligns across records",
+        "Address similarity 0.950 \u2014 both records in Indiana, same metro area likely",
+        "Name similarity 0.802 \u2014 moderate; Record A name is redacted/masked ([ORG_3]: [DATE_2]), preventing direct name comparison",
+        "Source systems differ: Record A from [GPE_2], Record B from enrollment_2024 \u2014 cross-system match",
+        "Record A name field appears to contain an organization tag and date token, suggesting possible data quality or masking issue that obscures true name"
+      ],
+      "predicted_rationale": "SSN, DOB, and address all align strongly, which normally supports SAME. However, Record A's name field is redacted/masked with org and date tokens, making direct name validation impossible. The 0.802 name similarity score cannot be fully trusted given the masking. Human review is needed to confirm the underlying name matches KATHY CLARK before merging.",
+      "gold_rationale": "Katherine/Kathy nickname variant. DOB/SSN/location exact.",
+      "decision_correct": false,
+      "latency_s": 7.793,
+      "error": null
+    },
+    {
+      "case_id": "HC020",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.95,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 3901 (score 1.000)",
+        "DOB exact match: identifier score 1.000",
+        "Address similarity 0.950 \u2014 both records located in FL, same metropolitan area",
+        "Name similarity 0.815 \u2014 within the nickname/variant range (0.70\u20130.85), consistent with abbreviation or alternate name form",
+        "Composite score 0.941 \u2014 well above SAME threshold",
+        "Cross-source match (pharmacy_2023 vs claims_2024) is expected for the same individual appearing in different systems"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly, and address similarity of 0.950 confirms the same Florida locale. Name similarity of 0.815 falls within the accepted nickname/variant range and does not constitute a conflicting signal. All hard identifiers align across two distinct source systems. Confident these records represent the same individual.",
+      "gold_rationale": "Joseph/Joe nickname. All identifiers confirm same person.",
+      "decision_correct": true,
+      "latency_s": 5.706,
+      "error": null
+    },
+    {
+      "case_id": "HC021",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'AMANDA ROBINSON'",
+        "SSN last4 match ([ORG_1] score: 1.000) \u2014 both records share last4 '5234'",
+        "DOB match ([ORG_2] score: 1.000) \u2014 birth dates confirmed identical despite redaction",
+        "Address similarity: 1.000 \u2014 city/state fully consistent across both records",
+        "Composite score: 1.000 \u2014 all weighted signals align perfectly",
+        "Records differ only in source system (enrollment_2023 vs pharmacy_2024) and encounter context, consistent with same patient across different care touchpoints"
+      ],
+      "predicted_rationale": "All hard identifiers \u2014 SSN last4, DOB, and address \u2014 score 1.000, with an exact name match. The only variation is source system and year of encounter (enrollment vs pharmacy), which is expected for the same patient appearing in multiple systems over time. No conflicting signals. High confidence this is the same individual.",
+      "gold_rationale": "Perfect match across all fields and systems.",
+      "decision_correct": true,
+      "latency_s": 7.004,
+      "error": null
+    },
+    {
+      "case_id": "HC022",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on full name (WALKER with matching first component)",
+        "SSN last4 match: 1.000 \u2014 both records share SSN last4 8945",
+        "DOB match: 1.000 \u2014 date of birth fields align exactly",
+        "Address similarity: 1.000 \u2014 city/state overlap is perfect",
+        "Composite score: 1.000 \u2014 all component scores at maximum"
+      ],
+      "predicted_rationale": "All hard identifiers \u2014 SSN last4, DOB, name, and address \u2014 score at 1.000 with zero conflicting signals. The composite score of 1.000 confirms a perfect match across every dimension. Despite redacted field labels, the numeric evidence unambiguously indicates these two records represent the same individual. Confidence is very high; recommend merging.",
+      "gold_rationale": "All fields identical. Clear same person.",
+      "decision_correct": true,
+      "latency_s": 5.417,
+      "error": null
+    },
+    {
+      "case_id": "HC023",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 2067 (score 1.000)",
+        "DOB exact match: score 1.000 (specific dates redacted/masked but numerically identical)",
+        "Address similarity 0.950 \u2014 both records located in Memphis, TN, indicating same geographic area",
+        "Name similarity 0.808 \u2014 falls within the 0.70\u20130.85 nickname/variant range; Record B name is partially redacted, limiting direct comparison",
+        "Composite score 0.940 \u2014 strongly above SAME threshold",
+        "Sources differ (pharmacy_2023 vs claims_2024) but cross-source duplicates are expected in healthcare MDM"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and address similarity is 0.950 (same city/state). Name similarity of 0.808 is consistent with a nickname, abbreviation, or partial redaction in Record B. All hard identifiers align. The cross-source context (pharmacy vs claims) is a common duplicate scenario. Confidence is slightly reduced due to name/PII masking in Record B.",
+      "gold_rationale": "Stephanie/Steph nickname. All identifiers match.",
+      "decision_correct": true,
+      "latency_s": 6.987,
+      "error": null
+    },
+    {
+      "case_id": "HC024",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 7412 (score 1.000)",
+        "DOB exact match: score 1.000 \u2014 birth dates align across both records",
+        "Address similarity 0.950 \u2014 both located in KY, high geographic overlap indicating same metro area or locality",
+        "Name similarity 0.820 \u2014 '[ORG_4] YOUNG' vs 'BEN YOUNG' is consistent with a nickname or abbreviation variant (e.g. a first name redacted/masked resolving to 'Ben')",
+        "Composite score 0.943 \u2014 well above SAME threshold",
+        "Sources differ ([ORG_3] vs claims_2024) but cross-source duplicates are expected in healthcare MDM"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and address similarity is 0.950 (same state, high overlap). Name similarity of 0.820 falls within the nickname/abbreviation range given that Record A's first name appears redacted or masked, plausibly resolving to 'Ben'. All hard identifiers confirm the same individual across two different source systems.",
+      "gold_rationale": "Benjamin/Ben nickname. DOB/SSN exact despite 2-year gap.",
+      "decision_correct": true,
+      "latency_s": 7.055,
+      "error": null
+    },
+    {
+      "case_id": "HC025",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.98,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'REBECCA KING'",
+        "SSN last4 match (labeled [ORG_2]): 1.000 \u2014 identical last four digits (4589)",
+        "DOB match (labeled [ORG_1]): 1.000 \u2014 birth dates align exactly despite redacted values",
+        "Address similarity: 1.000 \u2014 city/state fields score perfect overlap across both records",
+        "Composite score: 1.000 \u2014 all weighted signals in full agreement",
+        "No conflicting signals detected across any attribute"
+      ],
+      "predicted_rationale": "All hard identifiers \u2014 SSN last4, DOB, and address \u2014 score a perfect 1.000, as does the name. The composite score of 1.000 reflects complete agreement across every dimension. DOB values are redacted but the numeric match score confirms alignment. No conflicting signals exist. This is a clear duplicate record for the same individual.",
+      "gold_rationale": "All fields identical across source systems.",
+      "decision_correct": true,
+      "latency_s": 5.737,
+      "error": null
+    },
+    {
+      "case_id": "HC026",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 6723 ([ORG_1] score 1.000)",
+        "DOB match score 1.000 ([ORG_2]) \u2014 birth dates align exactly despite redacted display values",
+        "Address similarity 0.950 \u2014 high geographic overlap between [GPE_2] and [GPE_1]",
+        "Name similarity 0.822 \u2014 TIMOTHY WRIGHT vs [PERSON_2] consistent with nickname/abbreviation variant per decision boundary (\u22650.75 with matching hard identifiers)",
+        "Composite score 0.943 \u2014 well above SAME threshold",
+        "Source context differs (pharmacy_2023 vs enrollment_2024) but consistent with same individual appearing in multiple systems over time"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (scores 1.000). Address similarity of 0.950 confirms same geographic area. Name similarity of 0.822 falls within the nickname/variant range supported by fully matching hard identifiers. All primary deduplication signals converge on the same individual across two different source systems.",
+      "gold_rationale": "Timothy/Tim nickname. All identifiers match.",
+      "decision_correct": true,
+      "latency_s": 6.859,
+      "error": null
+    },
+    {
+      "case_id": "HC027",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'LAURA LOPEZ'",
+        "SSN last4: 1.000 \u2014 both records share last4 '3345'",
+        "DOB match score: 1.000 \u2014 DOB fields align per scoring (redacted/masked values score as matching)",
+        "Address similarity: 1.000 \u2014 both records show Albuquerque with full overlap",
+        "Composite score: 1.000 \u2014 all weighted attributes in full agreement"
+      ],
+      "predicted_rationale": "All hard identifiers \u2014 SSN last4, DOB, and address \u2014 score 1.000, and the name is an exact match. Every matching dimension returns maximum similarity. The only uncertainty is that DOB and city/state fields contain redacted tokens, but the scoring engine confirms they align. No conflicting signals are present. High confidence these are the same individual.",
+      "gold_rationale": "Perfect match. Annual re-enrollment.",
+      "decision_correct": true,
+      "latency_s": 6.423,
+      "error": null
+    },
+    {
+      "case_id": "HC028",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match (9178 = 9178, score 1.000)",
+        "DOB match score 1.000 \u2014 birth dates are identical",
+        "Address similarity 0.950 \u2014 records are in the same geographic area",
+        "Name similarity 0.830 \u2014 'ALEXANDER' vs 'ALEX' is a well-known nickname/abbreviation variant, consistent with same person",
+        "Composite score 0.945 \u2014 well above SAME threshold"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and address similarity is 0.950. Name similarity of 0.830 is fully explained by the ALEXANDER/ALEX nickname relationship \u2014 a canonical abbreviation with no conflicting signals. All hard identifiers confirm the same individual across an enrollment_2023 and pharmacy_2024 record.",
+      "gold_rationale": "Alexander/Alex nickname. All other fields match.",
+      "decision_correct": true,
+      "latency_s": 5.146,
+      "error": null
+    },
+    {
+      "case_id": "HC029",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.97,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on VICTORIA SCOTT",
+        "SSN last4 match: 1.000 \u2014 both records share last4 5801",
+        "DOB identifier match: 1.000 \u2014 hard identifier confirmed (redacted year, same month/day -05)",
+        "Address similarity: 1.000 \u2014 city/state overlap is exact",
+        "Composite score: 1.000 \u2014 all contributing signals at maximum agreement"
+      ],
+      "predicted_rationale": "All hard and soft identifiers align perfectly. Name is identical, SSN last4 matches, DOB scores 1.000, and address is an exact match. Records originate from different source systems (pharmacy_2022 vs. claims_2024), consistent with the same patient appearing across care settings over time. No conflicting signals detected. High confidence these represent the same individual.",
+      "gold_rationale": "All fields identical. 2-year gap, same person.",
+      "decision_correct": true,
+      "latency_s": 5.465,
+      "error": null
+    },
+    {
+      "case_id": "HC030",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 2456 ([ORG_1] score 1.000)",
+        "DOB match score 1.000 ([ORG_2]) \u2014 birth dates align exactly across records",
+        "Address similarity 0.950 \u2014 high geographic overlap between [GPE_2]/[PERSON_2] and [GPE_1]/[PERSON_1]",
+        "Name similarity 0.815 \u2014 within the nickname/variant range (0.70\u20130.85); 'JON GREEN' vs redacted [PERSON_3] consistent with abbreviation or alternate form",
+        "Composite score 0.941 \u2014 well above SAME threshold",
+        "Records sourced from different systems (claims_2024 vs enrollment_2024), which commonly produces name formatting differences"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (scores 1.000), and address similarity is 0.950. Name similarity of 0.815 falls within the expected range for nickname or formatting variants across claims and enrollment systems. No conflicting hard identifiers are present. All evidence points to the same individual recorded across two systems.",
+      "gold_rationale": "Jonathan/Jon nickname. DOB/SSN/address exact.",
+      "decision_correct": true,
+      "latency_s": 7.236,
+      "error": null
+    },
+    {
+      "case_id": "GZ001",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.72,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match, but names are redacted so common-name collision cannot be ruled out",
+        "SSN last4: Record A = 7842, Record B = 4521 \u2014 these differ completely (score 0.000)",
+        "DOB: Record A = [DATE_2]-14, Record B = [DATE_1]-14 \u2014 day-of-month matches (14) but year/month fields are redacted with different date tokens, so full DOB match is uncertain",
+        "[ORG_2] match: 1.000 \u2014 one organizational/plan identifier matches exactly",
+        "[ORG_1] match: 0.000 \u2014 a second organizational/plan identifier does not match at all",
+        "Address similarity: 0.950 \u2014 high geographic overlap, consistent with same area",
+        "Composite score: 0.738 \u2014 below the threshold for confident SAME determination"
+      ],
+      "predicted_rationale": "SSN last4 values differ completely (7842 vs 4521), which is a strong hard-identifier conflict. Name and address overlap is high, but redacted fields prevent full DOB confirmation. The split on org identifiers (one match, one zero) adds ambiguity. Mixed signals \u2014 possible data entry error, record duplication, or distinct individuals \u2014 require human review before merge.",
+      "gold_rationale": "Name/DOB/address match but SSN differs completely. Could be data entry error or different person. Needs manual review.",
+      "decision_correct": true,
+      "latency_s": 7.403,
+      "error": null
+    },
+    {
+      "case_id": "GZ002",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.88,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on JENNIFER SMITH",
+        "SSN last4: 3156 matches exactly across both records (score 1.000)",
+        "DOB match: 1.000 \u2014 birth dates are identical",
+        "Address similarity: 0.650 \u2014 below the 0.85 threshold, indicating possible address change or data inconsistency",
+        "Composite score: 0.913 \u2014 strong overall alignment"
+      ],
+      "predicted_rationale": "Name, SSN last4, and DOB all match exactly \u2014 the three hardest identifiers align fully. Address similarity of 0.650 is below the 0.85 strong-overlap threshold, suggesting a possible address update or move rather than a different individual. No conflicting hard identifiers are present. Confidence is slightly reduced due to the address gap, but the weight of evidence supports the same person.",
+      "gold_rationale": "Name/DOB/SSN all match. Miami to Orlando is a plausible relocation within Florida.",
+      "decision_correct": true,
+      "latency_s": 5.414,
+      "error": null
+    },
+    {
+      "case_id": "GZ003",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 9201",
+        "Name similarity: 1.000 \u2014 exact match on redacted name fields",
+        "[ORG_1] match: 1.000 \u2014 hard identifier (likely DOB or SSN-equivalent field) matches exactly",
+        "[ORG_2] match: 0.800 \u2014 moderate overlap on second identifier field, consistent with data entry variation or source system formatting difference",
+        "Address similarity: 0.950 \u2014 high geographic overlap across redacted city/state fields, consistent with same residence",
+        "Composite score: 0.938 \u2014 well above SAME threshold",
+        "Records originate from different source systems (enrollment_2023 vs claims_2024), which commonly introduces minor field-level discrepancies"
+      ],
+      "predicted_rationale": "SSN last4 match, exact name similarity, and a 1.000 hard-identifier match ([ORG_1]) collectively confirm the same individual. Address similarity of 0.950 reinforces co-location. The [ORG_2] score of 0.800 is the only modest deviation, likely attributable to cross-system formatting differences between enrollment and claims sources. All evidence points to a single person.",
+      "gold_rationale": "SSN exact match. DOB differs by 2 months \u2014 likely data entry error. Same name/address.",
+      "decision_correct": true,
+      "latency_s": 7.528,
+      "error": null
+    },
+    {
+      "case_id": "GZ004",
+      "gold_decision": "SAME",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.65,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'MARIA GARCIA', but this is a common name, so name alone is insufficient",
+        "SSN last4 match: 1.000 \u2014 both records share last4 digits 6734, a strong hard-identifier signal",
+        "DOB comparison: [DATE_2] vs [DATE_1] \u2014 DOB values differ between records; redacted dates prevent direct human verification but scores labeled as separate date fields suggest a discrepancy",
+        "Address similarity: 0.600 \u2014 moderate overlap; City/State values differ ([GPE_2] vs [GPE_1]), indicating possible relocation or distinct individuals",
+        "Source systems differ: Record A from pharmacy_2023, Record B from claims_2024 \u2014 different encounter contexts across time periods"
+      ],
+      "predicted_rationale": "SSN last4 matches exactly, but DOB fields differ between records \u2014 a classic ESCALATE pattern that could indicate a data entry error, a demographic update, or a different person sharing the last4 SSN digits. Address similarity of 0.600 and different cities add ambiguity. Human review needed to reconcile the DOB discrepancy before merge.",
+      "gold_rationale": "Name/DOB/SSN exact. Houston to San Antonio is plausible relocation. Same state.",
+      "decision_correct": false,
+      "latency_s": 7.406,
+      "error": null
+    },
+    {
+      "case_id": "GZ005",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.95,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 4521 ([ORG_1] score 1.000)",
+        "DOB/date identifier match: [ORG_2] score 1.000 \u2014 hard date identifier aligns exactly",
+        "Address similarity 0.950 \u2014 high geographic overlap consistent with same person across two source systems",
+        "Name similarity 0.920 \u2014 above the 0.85 threshold; consistent with nickname, abbreviation, or data entry variant between [PERSON_4] and [PERSON_2]",
+        "Composite score 0.968 \u2014 well above SAME threshold",
+        "Records originate from different source systems (enrollment_2023 vs claims_2024) \u2014 dual-source presence is expected for the same patient"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (scores 1.000). Address overlap is 0.950, confirming same geographic footprint. Name similarity of 0.920 exceeds the nickname/variant threshold and is consistent with a common name abbreviation or variant. All hard identifiers align; the minor name difference is attributable to data entry variation across enrollment and claims sources. Recommend merging as the same individual.",
+      "gold_rationale": "Name nearly identical (Brown vs Browne \u2014 likely typo). DOB/SSN/address all match.",
+      "decision_correct": true,
+      "latency_s": 7.659,
+      "error": null
+    },
+    {
+      "case_id": "GZ006",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match, but common-name collision possible",
+        "SSN last4: Record A = 8103, Record B = 2456 \u2014 completely different, score 0.000",
+        "DOB match score: 0.000 \u2014 different birth dates ([DATE_2] vs [DATE_1])",
+        "Address similarity: 0.950 \u2014 both in CO, likely same metro area, but does not override hard identifier conflicts",
+        "Composite score: 0.738 \u2014 below threshold for confident SAME determination",
+        "Both SSN last4 AND DOB conflict simultaneously \u2014 consistent with two distinct individuals sharing the same name"
+      ],
+      "predicted_rationale": "Despite an exact name match and high address overlap (both in CO), SSN last4 (8103 vs 2456) and DOB both score 0.000 \u2014 hard identifier conflicts on two independent fields. This pattern is consistent with a common-name collision rather than the same person. The Colorado address overlap is insufficient to override two conflicting hard identifiers. Recommend DISTINCT.",
+      "gold_rationale": "Name/DOB/address match but SSN differs. Could be identity issue or data error. Requires investigation.",
+      "decision_correct": false,
+      "latency_s": 6.209,
+      "error": null
+    },
+    {
+      "case_id": "GZ007",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match on PATRICIA MOORE",
+        "SSN last4 exact match: 5467 = 5467",
+        "DOB match score 0.850 \u2014 strong overlap, minor variation possibly due to formatting or redaction",
+        "Address similarity 0.950 \u2014 same state (WA), high geographic overlap",
+        "Composite score 0.950 \u2014 well above SAME threshold"
+      ],
+      "predicted_rationale": "All hard identifiers align strongly: SSN last4 is an exact match, DOB scores 0.850 (likely a formatting variant on redacted dates), address similarity is 0.950 within the same state. Name is identical at 1.000. No conflicting signals present. Composite of 0.950 firmly supports a SAME determination.",
+      "gold_rationale": "SSN match. DOB differs by exactly 1 year \u2014 common data entry error (year off by one). Same name/address.",
+      "decision_correct": true,
+      "latency_s": 5.024,
+      "error": null
+    },
+    {
+      "case_id": "GZ008",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "SSN last4: 7156 matches exactly in both records",
+        "DOB match score: 1.000 \u2014 birth dates are identical",
+        "Address similarity: 0.820 \u2014 both records show Georgia locations, partial city-level overlap",
+        "Composite score: 0.955 \u2014 well above SAME threshold",
+        "Both hard identifiers (SSN last4 and DOB) confirm same individual"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 (7156) and DOB match exactly (score 1.000), and name similarity is a perfect 1.000. Address similarity of 0.820 reflects a minor geographic discrepancy within Georgia but does not conflict with identity. Composite score of 0.955 strongly supports a single individual across two source systems.",
+      "gold_rationale": "Name/DOB/SSN exact. Atlanta and Marietta are in same metro area.",
+      "decision_correct": true,
+      "latency_s": 5.741,
+      "error": null
+    },
+    {
+      "case_id": "GZ009",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on redacted name tokens",
+        "SSN last4: both records show 6890 \u2014 exact match",
+        "ORG_2 match: 1.000 \u2014 exact match on redacted identifier (mapped to DOB or SSN field)",
+        "ORG_1 match: 1.000 \u2014 exact match on redacted identifier",
+        "Address similarity: 0.830 \u2014 below the 0.85 threshold but combined with all hard identifier matches still supportive",
+        "Source contexts differ (pharmacy_2022 vs claims_2024) \u2014 consistent with same person appearing in different systems over time"
+      ],
+      "predicted_rationale": "SSN last4 and both hard-identifier fields (ORG_1, ORG_2) match exactly. Name similarity is 1.000. Address similarity of 0.830 is slightly below the 0.85 threshold but, given that all other identifiers align perfectly and the records originate from different source systems two years apart, this likely reflects a minor address change or formatting difference rather than a different person.",
+      "gold_rationale": "Name/DOB/SSN match. Dallas to Plano is same metro area relocation.",
+      "decision_correct": true,
+      "latency_s": 6.56,
+      "error": null
+    },
+    {
+      "case_id": "GZ010",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on RICHARD TAYLOR",
+        "SSN last4: 3478 matches exactly in both records (score 1.000)",
+        "DOB identifier match score: 1.000 \u2014 birth dates align",
+        "Address similarity: 0.810 \u2014 below 0.85 threshold but supported by strong hard-identifier agreement",
+        "Composite score: 0.953 \u2014 well above SAME confidence range",
+        "Source system difference (enrollment_2023 vs claims_2024) is consistent with same person appearing in separate workflows over time"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (1.000). Name is an identical exact match. Address similarity of 0.810 is slightly below the 0.85 overlap threshold, but given that all hard identifiers (SSN, DOB, name) align perfectly and composite is 0.953, this likely reflects a minor address change between enrollment (2023) and claims (2024). Recommend merging as SAME person.",
+      "gold_rationale": "Name/DOB/SSN match. San Diego and Chula Vista are adjacent cities.",
+      "decision_correct": true,
+      "latency_s": 6.713,
+      "error": null
+    },
+    {
+      "case_id": "GZ011",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.65,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match",
+        "DOB match ([ORG_2]): 1.000 \u2014 birth dates align exactly",
+        "SSN last4 conflict ([ORG_1]): 0.000 \u2014 Record A ends in 9012, Record B ends in 1234, no overlap",
+        "Address similarity: 0.950 \u2014 same metropolitan area or highly similar location",
+        "Composite score: 0.738 \u2014 moderate overall match, dragged down by SSN conflict"
+      ],
+      "predicted_rationale": "Name and DOB match exactly, and address is nearly identical \u2014 strong signals pointing to the same person. However, SSN last4 digits differ completely (9012 vs 1234), which is a hard identifier conflict. This could indicate a data entry error, SSN update, or two distinct individuals sharing a name and DOB. Human review is required before merging.",
+      "gold_rationale": "Name/DOB/address match but SSN completely different. Suspicious \u2014 could be two different people with same name in same city.",
+      "decision_correct": true,
+      "latency_s": 5.725,
+      "error": null
+    },
+    {
+      "case_id": "GZ012",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match on THOMAS WHITE",
+        "SSN last4 exact match (5634) \u2014 [ORG_2] score 1.000",
+        "DOB match score 1.000 \u2014 [ORG_1] confirms identical birth dates",
+        "Address similarity 0.790 \u2014 both records in TN; city difference (redacted [GPE_1] vs Brentwood) may reflect a move or address update between 2023 and 2024 sources",
+        "Composite score 0.948 \u2014 well above SAME threshold"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4, DOB, and name are exact matches. Address similarity of 0.790 is slightly below the 0.85 threshold but is plausibly explained by a residential move between the 2023 pharmacy record and the 2024 enrollment record, both within TN. No conflicting signals are present. High confidence this is the same individual.",
+      "gold_rationale": "Name/DOB/SSN match. Nashville to Brentwood is same metro suburb.",
+      "decision_correct": true,
+      "latency_s": 6.533,
+      "error": null
+    },
+    {
+      "case_id": "GZ013",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on MARGARET HARRIS",
+        "SSN last4: 1.000 \u2014 both records share last4 2145",
+        "DOB match score: 1.000 \u2014 birth dates align across both records",
+        "Address similarity: 0.780 \u2014 below the 0.85 strong-overlap threshold, but SSN and DOB are exact matches which outweigh the address gap",
+        "Composite score: 0.945 \u2014 high overall alignment",
+        "Address fields contain redacted/masked tokens ([GPE_2], [ORG_3], [GPE_1] vs [PERSON_1], FL) introducing uncertainty in geographic comparison"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (1.000), and the name is identical. Address similarity of 0.780 is below the 0.85 threshold, but this is likely attributable to redacted/masked location tokens rather than a genuine geographic conflict. With two hard identifiers confirming the same person, this is a SAME recommendation with moderate-high confidence.",
+      "gold_rationale": "Name/DOB/SSN match. Tampa and St Petersburg are across the bay from each other.",
+      "decision_correct": true,
+      "latency_s": 6.468,
+      "error": null
+    },
+    {
+      "case_id": "GZ014",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.88,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "SSN last4: both records share last4 = 8567 \u2014 exact match (score 1.000)",
+        "DOB match: score 1.000 \u2014 exact date of birth match",
+        "Address similarity: 0.600 \u2014 partial overlap; City/State fields differ between records (different tokens), possibly different addresses or data entry variation",
+        "Composite score: 0.900 \u2014 strong overall match",
+        "Source systems differ (enrollment_2023 vs claims_2024) \u2014 consistent with same person appearing in two different data sources over time"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly, and the name is identical. Hard identifiers strongly indicate the same individual. Address similarity of 0.600 is the only diverging signal, likely reflecting a move between 2023 and 2024 or a data entry variance across source systems. No conflicting hard identifiers present. Recommend SAME.",
+      "gold_rationale": "Name/DOB/SSN exact. Charlotte to Raleigh \u2014 in-state relocation.",
+      "decision_correct": true,
+      "latency_s": 6.144,
+      "error": null
+    },
+    {
+      "case_id": "GZ015",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.72,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match (SARAH THOMPSON), but common name collision possible",
+        "SSN last4: Record A = 4290, Record B = 7890 \u2014 SSN last4 do NOT match, significant conflict",
+        "DOB: [DATE_2] vs [DATE_1] \u2014 DOB fields differ (redacted, but distinct tokens suggest different values)",
+        "Address similarity: 0.950 \u2014 high geographic overlap suggesting same or nearby location",
+        "ORG_2 match: 1.000 \u2014 shared organizational affiliation (e.g. insurer or provider system)",
+        "ORG_1 match: 0.000 \u2014 one org affiliation present in only one record",
+        "Composite score: 0.738 \u2014 below SAME threshold, reflects conflicting hard identifier signals"
+      ],
+      "predicted_rationale": "Exact name and high address overlap suggest possible same person, but SSN last4 (4290 vs 7890) and DOB tokens differ \u2014 hard identifier conflicts that cannot be auto-resolved. Could be a data entry error, duplicate enrollment, or two distinct individuals. The shared org affiliation (ORG_2=1.000) adds ambiguity. Human review required before merging.",
+      "gold_rationale": "Name/DOB/address match but SSN completely different. Needs verification.",
+      "decision_correct": true,
+      "latency_s": 7.797,
+      "error": null
+    },
+    {
+      "case_id": "GZ016",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match on DANIEL GARCIA",
+        "SSN last4 exact match: 7823 = 7823",
+        "DOB match score 1.000 \u2014 birth dates confirmed identical (values redacted but scores indicate full match)",
+        "Address similarity 0.810 \u2014 both records in OH, city variation consistent with same metro area or address update",
+        "Composite score 0.953 \u2014 well above SAME threshold"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 exact match, DOB score of 1.000, and exact name match. Address similarity of 0.810 in the same state (OH) is consistent with a moved address or minor city-level variation. No conflicting signals detected. Composite score of 0.953 strongly supports a single individual.",
+      "gold_rationale": "Name/DOB/SSN match. Columbus to Dublin (suburb) is same metro.",
+      "decision_correct": true,
+      "latency_s": 5.061,
+      "error": null
+    },
+    {
+      "case_id": "GZ017",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on full name [ORG_6]/[ORG_4] JACKSON",
+        "SSN last4: both records share last4 = 1456, match score 1.000",
+        "DOB match score: 1.000 \u2014 birth dates align exactly ([DATE_2] vs [DATE_1])",
+        "Address similarity: 0.830 \u2014 meets the \u22650.85 threshold boundary; city/state differ ([GPE_2]/[PERSON_2] vs [GPE_1]/[PERSON_1]), likely same metro or recent relocation",
+        "Composite score: 0.958 \u2014 strongly above SAME threshold",
+        "Records sourced from different systems (enrollment_2024 vs claims_2024) \u2014 cross-system duplication is a common MDM scenario"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 and DOB both score 1.000, name is an exact match. Address similarity of 0.830 is just below the 0.85 threshold but, combined with perfect hard-ID agreement and a composite of 0.958, the slight city/state variance is consistent with a recent move or data entry difference across systems. Recommend merging as same individual.",
+      "gold_rationale": "Name/DOB/SSN exact. San Jose and Santa Clara are adjacent.",
+      "decision_correct": true,
+      "latency_s": 7.821,
+      "error": null
+    },
+    {
+      "case_id": "GZ018",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.95,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on redacted name fields",
+        "SSN last4: both records show 6178 \u2014 exact match",
+        "ORG_1 match (DOB proxy): 1.000 \u2014 exact match on redacted date identifier",
+        "ORG_2 match: 0.850 \u2014 strong overlap on secondary identifier",
+        "Address similarity: 0.950 \u2014 same state (IN), high geographic overlap",
+        "Composite score: 0.950 \u2014 well above SAME threshold",
+        "Both records located in Indiana \u2014 consistent geography"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 exact match (6178), DOB-proxy score of 1.000, and name exact match. Address similarity of 0.950 confirms same geographic area within Indiana. Secondary identifier scores at 0.850. Composite of 0.950 exceeds the SAME threshold. No conflicting signals detected. Records represent the same individual.",
+      "gold_rationale": "SSN match. DOB off by 1 year \u2014 likely entry error. Same name/address.",
+      "decision_correct": true,
+      "latency_s": 5.47,
+      "error": null
+    },
+    {
+      "case_id": "GZ019",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.7,
+      "predicted_evidence": [
+        "SSN last4 exact match (3901 = 3901) \u2014 strong hard identifier alignment",
+        "DOB match score 1.000 \u2014 birth dates are identical",
+        "Address similarity 0.950 \u2014 both records located in FL, likely same metro area",
+        "Name similarity 0.720 \u2014 below the 0.75 threshold for confident nickname/variant resolution; names are redacted so specific variant cannot be confirmed",
+        "Sources differ (pharmacy_2023 vs claims_2024) \u2014 cross-source encounter, not inherently conflicting but adds uncertainty",
+        "Name fields are masked ([PERSON_1]/[PERSON_2]) \u2014 cannot visually inspect for cross-language variant or abbreviation"
+      ],
+      "predicted_rationale": "SSN last4, DOB, and address strongly point to the same individual. However, name similarity of 0.720 falls below the safe threshold for automatic SAME resolution, and both name fields are redacted \u2014 preventing visual confirmation of a nickname or cross-language variant. Human review is needed to inspect actual name values before merging.",
+      "gold_rationale": "Joseph/Jose could be nickname OR different person (cultural variant). DOB/SSN/address match but name ambiguity warrants review.",
+      "decision_correct": true,
+      "latency_s": 6.943,
+      "error": null
+    },
+    {
+      "case_id": "GZ020",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match on 'AMANDA ROBINSON'",
+        "SSN last4 exact match: both records share last4 = 5234 ([ORG_1] score 1.000)",
+        "DOB match score 1.000 ([ORG_2]) \u2014 birth dates confirmed identical despite redaction",
+        "Address similarity 0.800 \u2014 different city labels present but within acceptable overlap range for same individual across source systems",
+        "Composite score 0.950 \u2014 well above SAME threshold",
+        "Records originate from different source systems (enrollment_2023 vs pharmacy_2024), consistent with the same person appearing in multiple workflows over time"
+      ],
+      "predicted_rationale": "All hard identifiers confirm the same person: SSN last4, DOB, and name are exact matches. Address similarity of 0.800 is slightly below the 0.85 threshold but is offset by perfect agreement on all other identifiers and a composite of 0.950. The two records likely reflect the same individual across different care touchpoints (enrollment vs. pharmacy).",
+      "gold_rationale": "Name/DOB/SSN exact. Austin to Round Rock is same metro suburb.",
+      "decision_correct": true,
+      "latency_s": 7.416,
+      "error": null
+    },
+    {
+      "case_id": "GZ021",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match ([ORG_4] WALKER vs [ORG_3] WALKER after normalization)",
+        "SSN last4 match: 1.000 \u2014 both records share SSN last4 8945",
+        "DOB match: 1.000 \u2014 birth dates confirmed identical across both records",
+        "Address similarity: 0.820 \u2014 below the 0.85 threshold but still substantially overlapping; city/state fields differ in labeling/format which may reflect data entry variation rather than a different location",
+        "Composite score: 0.955 \u2014 strongly above threshold for SAME determination"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly, and name similarity is 1.000. Address similarity of 0.820 is slightly below the 0.85 guideline threshold, but with all hard identifiers (SSN, DOB, name) fully aligned and a composite of 0.955, the address gap is likely a formatting or jurisdiction label discrepancy. No conflicting signals present. Recommend SAME.",
+      "gold_rationale": "Name/DOB/SSN match. Fort Worth and Arlington are adjacent DFW cities.",
+      "decision_correct": true,
+      "latency_s": 6.506,
+      "error": null
+    },
+    {
+      "case_id": "GZ022",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'STEPHANIE HALL'",
+        "SSN last4: exact match on 2067 (score 1.000)",
+        "DOB: exact match (score 1.000, though underlying dates are redacted as [DATE_1] and [DATE_2])",
+        "Address similarity: 0.790 \u2014 Memphis, TN and Germantown, TN are adjacent suburbs in the same metro area",
+        "Composite score: 0.948 \u2014 well above SAME threshold",
+        "Sources differ (pharmacy_2023 vs claims_2024) \u2014 consistent with same patient across different encounter types over time"
+      ],
+      "predicted_rationale": "All hard identifiers align: exact name, exact SSN last4, and exact DOB match. Memphis and Germantown are neighboring communities in the same TN metro area, explaining the 0.790 address similarity \u2014 consistent with a residential move or address variation. No conflicting signals present. High confidence this is the same individual.",
+      "gold_rationale": "Name/DOB/SSN match. Memphis to Germantown is same metro suburb.",
+      "decision_correct": true,
+      "latency_s": 5.9,
+      "error": null
+    },
+    {
+      "case_id": "GZ023",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.72,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact name match between [ORG_5] YOUNG and [ORG_3] YOUNG",
+        "DOB match score 1.000 \u2014 birth dates [DATE_2] and [DATE_1] are consistent",
+        "SSN last4 mismatch \u2014 Record A ends in 7412, Record B ends in 5678 (score 0.000)",
+        "Address similarity 0.950 \u2014 both located in Kentucky, likely same metro area",
+        "Composite score 0.738 \u2014 below SAME threshold due to SSN conflict"
+      ],
+      "predicted_rationale": "Name and DOB match exactly, and addresses are in the same Kentucky area. However, SSN last4 digits differ completely (7412 vs 5678). This conflict could indicate a data entry error on one record, a merged/corrupted record, or two distinct individuals sharing a name and DOB. The SSN discrepancy is a hard identifier conflict that prevents automated resolution and requires human review.",
+      "gold_rationale": "Name/DOB/address match but SSN differs. 2-year gap compounds uncertainty.",
+      "decision_correct": true,
+      "latency_s": 5.994,
+      "error": null
+    },
+    {
+      "case_id": "GZ024",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'REBECCA KING'",
+        "SSN last4: both records show 4589 \u2014 exact match (score 1.000)",
+        "DOB match score: 1.000 \u2014 birth dates confirmed identical despite redacted values",
+        "Address similarity: 0.810 \u2014 below the 0.85 threshold but combined with exact SSN and DOB match, consistent with same person at a different address over time",
+        "Composite score: 0.953 \u2014 strong overall alignment across all dimensions"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 (4589), DOB (score 1.000), and exact name match. Address similarity of 0.810 is slightly below the 0.85 threshold but is outweighed by the exact match on SSN and DOB. This pattern is consistent with a residential move or address update across sources. High confidence this is the same individual.",
+      "gold_rationale": "Name/DOB/SSN match. Baltimore to Towson is same metro area.",
+      "decision_correct": true,
+      "latency_s": 5.825,
+      "error": null
+    },
+    {
+      "case_id": "GZ025",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on TIMOTHY WRIGHT",
+        "SSN last4: exact match on 6723 ([ORG_2] match score 1.000)",
+        "DOB: exact match ([ORG_1] match score 1.000) despite redacted date values",
+        "Address similarity: 0.780 \u2014 moderate overlap; city/state fields are redacted/masked, preventing full confirmation but scores indicate partial geographic alignment",
+        "Composite score: 0.945 \u2014 well above SAME threshold",
+        "Source context differs (pharmacy_2023 vs enrollment_2024) \u2014 consistent with same person appearing in two different system encounters over time"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (scores 1.000). Name is identical. Address similarity of 0.780 is the only mild hesitation, but with two hard identifiers fully confirmed and a composite of 0.945, this falls comfortably within SAME boundaries. Different source systems and years are expected for the same patient across care settings.",
+      "gold_rationale": "Name/DOB/SSN match. Milwaukee to Waukesha is same metro.",
+      "decision_correct": true,
+      "latency_s": 6.747,
+      "error": null
+    },
+    {
+      "case_id": "GZ026",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'LAURA LOPEZ'",
+        "SSN last4: exact match on 3345 (score 1.000)",
+        "DOB match score: 1.000 \u2014 birth dates confirmed identical",
+        "Address similarity: 0.800 \u2014 Albuquerque and Rio Rancho are adjacent metro areas in New Mexico, consistent with a residential move or secondary address",
+        "Composite score: 0.950 \u2014 strongly favors same individual"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 and DOB both match exactly (1.000), and the name is identical. Address similarity of 0.800 reflects Albuquerque vs. Rio Rancho \u2014 neighboring NM cities \u2014 consistent with a move or dual address, not a different person. No conflicting signals detected. High confidence these are the same individual.",
+      "gold_rationale": "Name/DOB/SSN exact. Albuquerque to Rio Rancho is adjacent city.",
+      "decision_correct": true,
+      "latency_s": 5.583,
+      "error": null
+    },
+    {
+      "case_id": "GZ027",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.87,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match, but 'ALEXANDER HILL' is a common name, raising collision risk",
+        "SSN last4 differ: Record A = 9178, Record B = 3456 \u2014 hard identifier conflict",
+        "DOB mismatch: Record A = [DATE_2], Record B = [DATE_1] \u2014 hard identifier conflict",
+        "Address similarity: 0.650 \u2014 moderate overlap, insufficient to override conflicting hard identifiers",
+        "SSN match score: 0.000 \u2014 no SSN overlap confirmed",
+        "Composite score: 0.663 \u2014 below threshold for confident SAME determination"
+      ],
+      "predicted_rationale": "Despite identical names, SSN last4 (9178 vs 3456) and DOB both conflict \u2014 two independent hard identifier mismatches. Address similarity of 0.650 is insufficient to override these. 'ALEXANDER HILL' is a plausible common-name collision. All evidence points to two distinct individuals.",
+      "gold_rationale": "Name/DOB match but SSN differs and cities are 100+ miles apart. Different person likely.",
+      "decision_correct": false,
+      "latency_s": 5.508,
+      "error": null
+    },
+    {
+      "case_id": "GZ028",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on VICTORIA SCOTT",
+        "SSN last4: 1.000 \u2014 both records share last4 5801",
+        "DOB match score: 1.000 \u2014 birth month (-05) consistent; year fields are redacted/masked but score indicates match",
+        "Address similarity: 0.830 \u2014 below 0.850 threshold but close; city/state for Record A is redacted ([GPE_1], [PERSON_1]), preventing full address confirmation",
+        "Composite score: 0.958 \u2014 strongly above SAME threshold",
+        "Source difference: pharmacy_2022 vs claims_2024 \u2014 different encounter types and dates, consistent with same patient across systems"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both score 1.000, and name is an exact match. Address similarity of 0.830 is slightly below the 0.850 threshold, but Record A's city/state is redacted, limiting full comparison. The redaction introduces minor uncertainty; however, the hard identifier alignment (SSN + DOB + exact name) strongly supports a single individual across two source systems.",
+      "gold_rationale": "Name/DOB/SSN match. Fresno and Clovis are adjacent.",
+      "decision_correct": true,
+      "latency_s": 7.049,
+      "error": null
+    },
+    {
+      "case_id": "GZ029",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "SSN last4: both records show 2456 \u2014 exact match",
+        "ORG_2 match: 1.000 \u2014 hard identifier match (likely DOB or equivalent)",
+        "ORG_1 match: 1.000 \u2014 hard identifier match (likely SSN or equivalent)",
+        "Address similarity: 0.810 \u2014 moderate-to-high geographic overlap, below 0.85 threshold but supported by all other hard identifiers aligning",
+        "Composite score: 0.953 \u2014 strongly indicative of same individual",
+        "Records originate from different source systems (claims_2024 vs enrollment_2024) \u2014 expected to have minor address discrepancies"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 exact match (2456), ORG_1 and ORG_2 both score 1.000, and name is identical. Address similarity of 0.810 is slightly below the 0.85 threshold but is consistent with cross-system data entry variance between claims and enrollment records. No conflicting signals detected. Composite of 0.953 confirms same individual.",
+      "gold_rationale": "Name/DOB/SSN match. Sacramento to Elk Grove is same metro.",
+      "decision_correct": true,
+      "latency_s": 6.312,
+      "error": null
+    },
+    {
+      "case_id": "GZ030",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.72,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'MARK ADAMS', but this is a common name and alone is insufficient",
+        "SSN last4 match ([ORG_2]): 1.000 \u2014 hard identifier matches exactly",
+        "DOB match ([ORG_1]): 0.000 \u2014 hard identifier conflict; [DATE_2] vs [DATE_1] show no overlap",
+        "Address similarity: 0.950 \u2014 both records in Portland, OR, strong geographic overlap",
+        "Composite score: 0.738 \u2014 mid-range, reflecting the DOB conflict pulling down an otherwise strong match"
+      ],
+      "predicted_rationale": "SSN last4 and address strongly suggest the same person, but DOB scores 0.000 \u2014 a hard identifier conflict. This could be a data entry error (transposed digits or wrong year entered at one source) or a different individual sharing the SSN last4 and city. The discrepancy between two hard identifiers (SSN match vs. DOB mismatch) requires human review before merging.",
+      "gold_rationale": "Name/DOB/address match but SSN differs completely. Could be same or different person.",
+      "decision_correct": true,
+      "latency_s": 7.628,
+      "error": null
+    },
+    {
+      "case_id": "GZ031",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "SSN last4: both records show 6234 \u2014 exact match",
+        "DOB match score: 1.000 \u2014 exact date of birth match",
+        "Address similarity: 0.810 \u2014 both records show Michigan; city field partially masked in Record A but state (MI) aligns with Dearborn, MI in Record B",
+        "Composite score: 0.953 \u2014 high overall match confidence",
+        "Source systems differ (ORG_3 vs pharmacy_2024) \u2014 consistent with same patient appearing in multiple healthcare/pharmacy systems"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 (6234), DOB (exact match), and name (exact match). Address similarity of 0.810 reflects a partially masked city in Record A, but the state (MI) is consistent with Dearborn, MI. The composite score of 0.953 is well above the SAME threshold. Different source systems are expected for a single patient across care settings.",
+      "gold_rationale": "Name/DOB/SSN match. Detroit and Dearborn share a border.",
+      "decision_correct": true,
+      "latency_s": 6.974,
+      "error": null
+    },
+    {
+      "case_id": "GZ032",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 1578 ([ORG_2] match score 1.000)",
+        "DOB exact match: [ORG_1] match score 1.000 confirms identical date of birth",
+        "Address similarity 0.850 \u2014 meets the \u22650.85 threshold indicating same or very nearby location",
+        "Name similarity 0.830 \u2014 within the 0.70\u20130.85 nickname/variant range; consistent with SAME-person rule given hard identifier alignment",
+        "Composite score 0.920 \u2014 strong overall signal supporting a single individual",
+        "Source system difference (enrollment_2023 vs claims_2024) is consistent with the same person appearing in two separate workflows over time"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (scores 1.000). Address similarity of 0.850 meets the overlap threshold. Name similarity of 0.830 falls in the nickname/variant range, which the decision rules accept when hard identifiers align strongly. No conflicting signals detected. Records represent the same individual across two source systems.",
+      "gold_rationale": "Steven/Steve nickname. DOB/SSN match. KC metro spans MO/KS border.",
+      "decision_correct": true,
+      "latency_s": 7.381,
+      "error": null
+    },
+    {
+      "case_id": "GZ033",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.88,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on KAREN MITCHELL",
+        "SSN last4: both records show 3890 \u2014 exact match (score 1.000)",
+        "DOB: score 1.000 \u2014 exact match despite redacted display values ([DATE_2] vs [DATE_1])",
+        "Address similarity: 0.700 \u2014 moderate overlap; records originate from different sources (pharmacy_2023 vs enrollment_2024) and city is partially redacted in Record A, limiting full comparison",
+        "Composite score: 0.925 \u2014 strong overall alignment"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 and DOB both score 1.000, and names match exactly. Address similarity of 0.700 is the only soft signal of divergence, likely attributable to source differences (pharmacy vs enrollment) or redaction of Record A's city/state. No conflicting signals exist. Confidence is slightly tempered by the redacted location in Record A preventing full address verification.",
+      "gold_rationale": "Name/DOB/SSN match. Omaha and Council Bluffs are across state border but same metro.",
+      "decision_correct": true,
+      "latency_s": 6.677,
+      "error": null
+    },
+    {
+      "case_id": "GZ034",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match across both records",
+        "SSN last4: both records show 5123 \u2014 exact match",
+        "[ORG_2] match: 1.000 \u2014 hard identifier fully agrees",
+        "[ORG_1] match: 1.000 \u2014 hard identifier fully agrees",
+        "Address similarity: 0.830 \u2014 below 0.85 threshold but near boundary; city/state fields are redacted so exact geography cannot be confirmed",
+        "Composite score: 0.958 \u2014 strong overall signal",
+        "Record sources differ (claims_2024 vs enrollment_2024) \u2014 consistent with same person appearing in two separate data feeds"
+      ],
+      "predicted_rationale": "All hard identifiers (SSN last4, both ORG matches) align exactly, and name similarity is a perfect 1.000. Address similarity of 0.830 is slightly below the 0.85 threshold but is near the boundary, and the geographic fields are redacted, limiting interpretation. The composite score of 0.958 is high. The source difference (claims vs enrollment) is a normal cross-system occurrence. Overall evidence strongly supports a single individual.",
+      "gold_rationale": "Name/DOB/SSN exact. Las Vegas and Henderson share a border.",
+      "decision_correct": true,
+      "latency_s": 6.878,
+      "error": null
+    },
+    {
+      "case_id": "GZ035",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on redacted name fields",
+        "SSN last4: both records share 7456 \u2014 exact match (score 1.000)",
+        "DOB match score: 1.000 \u2014 exact match on redacted date fields",
+        "Address similarity: 0.810 \u2014 both located in VA, different cities but within same state",
+        "Composite score: 0.953 \u2014 well above SAME threshold",
+        "Sources differ (pharmacy_2023 vs claims_2024) \u2014 consistent with same patient appearing in multiple systems over time"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 (7456), DOB, and name are exact matches. Address similarity of 0.810 reflects different cities within Virginia, which is plausible for a patient who moved or uses a different billing address. Cross-source appearance (pharmacy vs claims) is expected in healthcare MDM. No conflicting signals detected. Recommend merging as same individual.",
+      "gold_rationale": "Name/DOB/SSN match. Richmond and Henrico are same metro.",
+      "decision_correct": true,
+      "latency_s": 6.153,
+      "error": null
+    },
+    {
+      "case_id": "GZ036",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 2789 (score 1.000)",
+        "DOB exact match: score 1.000 \u2014 same birth date confirmed",
+        "Name similarity: 1.000 \u2014 exact name match on TURNER surname and first name token",
+        "Address similarity: 0.750 \u2014 moderate geographic overlap; city/state fields are redacted but score suggests same general area",
+        "Composite score: 0.938 \u2014 strongly above SAME threshold",
+        "No conflicting hard identifiers detected; SSN and DOB alignment leaves no ambiguity"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (scores 1.000), and name similarity is a perfect 1.000. Address similarity of 0.750 is the only partial signal, likely reflecting a move or data entry variation between enrollment periods. All hard identifiers confirm the same individual. No conflicting signals present.",
+      "gold_rationale": "Name/DOB/SSN match. Raleigh-Durham is same metro area.",
+      "decision_correct": true,
+      "latency_s": 6.149,
+      "error": null
+    },
+    {
+      "case_id": "GZ037",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'AMY PHILLIPS'",
+        "SSN last4 match: 1.000 \u2014 both records share last4 9034",
+        "DOB match: 1.000 \u2014 hard identifier confirms same birth date",
+        "Address similarity: 0.790 \u2014 below the 0.85 threshold but offset by exact SSN and DOB matches",
+        "Composite score: 0.948 \u2014 strong overall signal for same person"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (scores 1.000), and the name is identical. Address similarity of 0.790 is slightly below the 0.85 preferred threshold, likely reflecting a city/state data variance or record update, but does not constitute a conflicting signal given the strength of all hard identifiers. Composite of 0.948 supports a SAME determination.",
+      "gold_rationale": "Name/DOB/SSN match. Florissant is a St Louis suburb.",
+      "decision_correct": true,
+      "latency_s": 5.75,
+      "error": null
+    },
+    {
+      "case_id": "GZ038",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match on 'BRIAN CAMPBELL'",
+        "SSN last4 exact match \u2014 both records share last4 6567",
+        "DOB match score 1.000 \u2014 birth dates confirmed identical (values redacted but score is exact)",
+        "Address similarity 0.650 \u2014 both in OH; city difference (redacted GPE_1 vs. Akron) may reflect move or abbreviation between 2022 and 2024 sources",
+        "Composite score 0.913 \u2014 strong overall match across all weighted dimensions"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly. Name is identical. Address similarity of 0.650 is the only soft signal, likely explained by a geographic move or data entry variant between the 2022 pharmacy and 2024 claims sources \u2014 both remain in OH. No conflicting hard identifiers. All evidence points to the same individual.",
+      "gold_rationale": "Name/DOB/SSN match. Cleveland and Akron are nearby but distinct cities in NE Ohio.",
+      "decision_correct": true,
+      "latency_s": 6.334,
+      "error": null
+    },
+    {
+      "case_id": "GZ039",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'NICOLE PARKER'",
+        "SSN last4 match: 1.000 \u2014 identical last four digits (1890) across both records",
+        "DOB match: 1.000 \u2014 birth dates align exactly (day-of-month '14' visible and scores confirm full match)",
+        "Address similarity: 0.830 \u2014 below the 0.85 threshold but offset by exact hard-identifier matches; may reflect a residential move between enrollment_2023 and pharmacy_2024",
+        "Composite score: 0.958 \u2014 high overall confidence across all dimensions",
+        "Source difference: enrollment_2023 vs pharmacy_2024 \u2014 different systems and time periods are consistent with a same patient appearing in two downstream workflows"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly (1.000), and the name is identical (1.000). Address similarity of 0.830 is slightly below the 0.85 threshold but is adequately explained by a possible address change between the 2023 enrollment record and the 2024 pharmacy record. All hard identifiers confirm the same individual. No conflicting signals present.",
+      "gold_rationale": "Name/DOB/SSN match. Metairie is a New Orleans suburb.",
+      "decision_correct": true,
+      "latency_s": 7.548,
+      "error": null
+    },
+    {
+      "case_id": "GZ040",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.88,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match, but common-name collision possible",
+        "SSN last4: Record A = 4123, Record B = 7890 \u2014 completely different, strong conflict",
+        "DOB: [ORG_1] match score = 0.000 \u2014 birth dates do not match",
+        "[ORG_2] match: 1.000 \u2014 one identifier aligns, but likely a shared demographic field (e.g. state/enrollment group) rather than a hard biometric identifier",
+        "Address similarity: 0.780 \u2014 same state (UT) but below the 0.85 threshold required to support a SAME decision",
+        "Composite score: 0.695 \u2014 below confidence threshold for a SAME determination"
+      ],
+      "predicted_rationale": "Despite identical names and one matching organizational identifier, the SSN last4 digits differ completely (4123 vs 7890) and DOB shows zero match. These hard identifier conflicts are disqualifying. Address similarity of 0.780 (same state, possibly different city) and the name match likely reflect a common-name collision. These are distinct individuals.",
+      "gold_rationale": "Name/DOB match but SSN differs and different city (though same metro). Needs investigation.",
+      "decision_correct": false,
+      "latency_s": 7.308,
+      "error": null
+    },
+    {
+      "case_id": "GZ041",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.95,
+      "predicted_evidence": [
+        "SSN last4 exact match (5678 = 5678, score 1.000)",
+        "DOB match score 1.000 \u2014 birth dates confirmed identical",
+        "Name similarity 0.950 \u2014 'SARAH' vs 'SARA' is a common spelling variant/nickname, well within acceptable range",
+        "Address similarity 0.950 \u2014 both records in OK, consistent with same geographic area",
+        "Composite score 0.975 \u2014 strong overall match across all dimensions",
+        "Records sourced from different systems (pharmacy_2023 vs claims_2024), consistent with same patient appearing in multiple care settings"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly. Address similarity is 0.950 within the same state (OK). Name difference of 'SARAH' vs 'SARA' is a well-known spelling variant and not a conflicting signal. All hard identifiers align strongly. Composite score of 0.975 confirms same individual across two source systems.",
+      "gold_rationale": "Sarah/Sara minor spelling variant. DOB/SSN/address exact match.",
+      "decision_correct": true,
+      "latency_s": 6.191,
+      "error": null
+    },
+    {
+      "case_id": "GZ042",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'RYAN STEWART'",
+        "SSN last4: both records show 2345 \u2014 exact match (score 1.000)",
+        "DOB identifier match score: 1.000 \u2014 hard identifier confirms same individual despite redacted date values",
+        "Address similarity: 0.800 \u2014 partial geographic overlap; different cities/states listed but score indicates proximity or partial match",
+        "Composite score: 0.950 \u2014 strong overall alignment across all attributes",
+        "Source system difference noted: enrollment_2023 vs pharmacy_2024 \u2014 consistent with same person appearing in two different encounter contexts over time"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 and DOB both score 1.000, name is an exact match at 1.000, and composite is 0.950. Address similarity of 0.800 is the only mild discrepancy, likely reflecting a move or data entry variation between 2023 and 2024 encounters. No conflicting signals detected. Confident these records represent the same individual.",
+      "gold_rationale": "Name/DOB/SSN match. Hoover is a Birmingham suburb.",
+      "decision_correct": true,
+      "latency_s": 7.008,
+      "error": null
+    },
+    {
+      "case_id": "GZ043",
+      "gold_decision": "SAME",
+      "predicted_decision": "ESCALATE",
+      "predicted_confidence": 0.65,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on DONNA SANCHEZ",
+        "SSN last4 match: 1.000 \u2014 both records share last4 8901",
+        "DOB match: 1.000 \u2014 DOB fields match (exact values redacted but score confirms match)",
+        "Address similarity: 0.600 \u2014 below the 0.85 threshold for strong overlap; city/state fields differ between records",
+        "City/State for Record A contains redacted tokens ([GPE_1], [PERSON_1], [ORG_5]) preventing full address verification",
+        "City/State for Record B contains redacted tokens ([ORG_4], [ORG_3]) also preventing full address verification"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly, and the name is identical \u2014 strong indicators of the same person. However, address similarity is only 0.600, below the 0.85 threshold for confident confirmation. Both city/state fields are redacted, preventing direct address verification. The address gap may reflect a move, but cannot be confirmed without human review.",
+      "gold_rationale": "Name/DOB/SSN exact. El Paso TX and Las Cruces NM are cross-state but same metro area.",
+      "decision_correct": false,
+      "latency_s": 6.512,
+      "error": null
+    },
+    {
+      "case_id": "GZ044",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match (1.000) \u2014 both records share last4 '1234'",
+        "DOB match score 1.000 \u2014 birth dates confirmed identical despite redaction",
+        "Address similarity 0.870 \u2014 above the 0.85 threshold; same general metro area",
+        "Name similarity 0.825 \u2014 'GREGORY' vs 'GREG' is a classic formal/nickname variant, consistent with same individual",
+        "Composite score 0.924 \u2014 strongly above SAME threshold",
+        "Source systems differ (pharmacy_2023 vs claims_2024) \u2014 expected for same patient across encounter types"
+      ],
+      "predicted_rationale": "SSN last4 and DOB both match exactly. Address similarity of 0.870 clears the 0.85 threshold. Name difference (GREGORY vs GREG) is a well-known nickname abbreviation, not a conflicting signal. All hard identifiers align; composite of 0.924 confirms a high-confidence same-person determination.",
+      "gold_rationale": "Gregory/Greg nickname. DOB/SSN match. West Hartford is a Hartford suburb.",
+      "decision_correct": true,
+      "latency_s": 6.435,
+      "error": null
+    },
+    {
+      "case_id": "GZ045",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match on HEATHER ROGERS",
+        "SSN last4 exact match (4567 = 4567)",
+        "DOB match score 1.000 \u2014 birth dates confirmed identical (fields redacted but score is exact)",
+        "Address similarity 0.810 \u2014 Boise, ID and Meridian, ID are adjacent cities in the same metro area, consistent with a move or dual-address scenario",
+        "Composite score 0.953 \u2014 well above SAME threshold"
+      ],
+      "predicted_rationale": "All hard identifiers align: exact name, SSN last4, and DOB all match perfectly. Address similarity of 0.810 reflects Boise and Meridian being neighboring cities in the same Idaho metro area \u2014 consistent with a residential move or alternate address on file. No conflicting signals detected. Records represent the same individual.",
+      "gold_rationale": "Name/DOB/SSN match. Meridian is adjacent to Boise.",
+      "decision_correct": true,
+      "latency_s": 5.232,
+      "error": null
+    },
+    {
+      "case_id": "GZ046",
+      "gold_decision": "ESCALATE",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact name match, but 'PAUL REED' is a common name, raising collision risk",
+        "DOB match (ORG_2): 1.000 \u2014 birth dates appear to match exactly",
+        "SSN last4 match (ORG_1): 0.000 \u2014 SSN last4 digits differ completely (7890 vs 3456)",
+        "Address similarity: 0.950 \u2014 both in Providence, RI, consistent with same metro area",
+        "Composite score: 0.738 \u2014 below the threshold for confident SAME determination"
+      ],
+      "predicted_rationale": "Despite exact name and DOB match, SSN last4 differ completely (7890 vs 3456). A DOB match with SSN conflict is a serious hard-identifier discrepancy. Two individuals named PAUL REED in the same city sharing a DOB is plausible (common name). The SSN conflict is disqualifying \u2014 these are most likely distinct individuals.",
+      "gold_rationale": "Name/DOB/address match but SSN completely different. Suspicious.",
+      "decision_correct": false,
+      "latency_s": 5.851,
+      "error": null
+    },
+    {
+      "case_id": "GZ047",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match (both 2134) \u2014 score 1.000",
+        "DOB match score 1.000 \u2014 birth dates align exactly",
+        "Address similarity 0.950 \u2014 same metropolitan area or near-identical location",
+        "Name similarity 0.910 \u2014 'CHRISTINE' vs 'CHRISTINA' is a well-known formal/variant spelling pair, consistent with nickname/abbreviation range",
+        "Composite score 0.965 \u2014 strongly above SAME threshold",
+        "Records sourced from different systems (pharmacy_2023 vs claims_2024) \u2014 expected discrepancy in data entry across channels"
+      ],
+      "predicted_rationale": "All hard identifiers confirm the same person: SSN last4 and DOB both match exactly (1.000), and address similarity is 0.950. Name difference ('CHRISTINE' vs 'CHRISTINA') scores 0.910, well within the nickname/variant range \u2014 a common spelling variation of the same given name. Cross-system sourcing (pharmacy vs claims) explains minor discrepancies. No conflicting signals detected.",
+      "gold_rationale": "Christine/Christina very similar names. DOB/SSN/address exact. Likely spelling variant.",
+      "decision_correct": true,
+      "latency_s": 6.357,
+      "error": null
+    },
+    {
+      "case_id": "GZ048",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on SCOTT MORGAN",
+        "SSN last4: 1.000 \u2014 exact match on last 4 digits (5467)",
+        "DOB match score: 1.000 \u2014 birth dates align (both share day '-16', month/year masked but scored as full match)",
+        "Address similarity: 0.750 \u2014 both records in TN, city names differ ([PERSON_1] vs [GPE_1]) but same state; score suggests partial geographic overlap",
+        "Composite score: 0.938 \u2014 strong overall alignment across all dimensions",
+        "Sources differ (enrollment_2023 vs pharmacy_2024) \u2014 consistent with same individual appearing in two separate systems over time"
+      ],
+      "predicted_rationale": "All hard identifiers confirm same person: exact name, SSN last4, and DOB all score 1.000. Address similarity of 0.750 with same state (TN) is consistent with a possible city variation, move, or data entry difference \u2014 not a conflicting signal. Composite of 0.938 is well above SAME threshold. No conflicting signals detected.",
+      "gold_rationale": "Name/DOB/SSN match. Maryville is near Knoxville.",
+      "decision_correct": true,
+      "latency_s": 6.916,
+      "error": null
+    },
+    {
+      "case_id": "GZ049",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match on 'ANGELA BELL'",
+        "SSN last4: 1.000 \u2014 both records share last4 '8901'",
+        "DOB match: 1.000 \u2014 birth dates confirmed identical (both redacted but scores confirm match)",
+        "Address similarity: 0.790 \u2014 both located in KY, city-level difference likely reflects same metro area or address update",
+        "Composite score: 0.948 \u2014 strong overall match across all dimensions"
+      ],
+      "predicted_rationale": "All hard identifiers align: SSN last4 and DOB both score 1.000, and names are an exact match. Address similarity of 0.790 is slightly below the 0.85 threshold but is offset by perfect scores on all other identifiers. Both records are in KY, suggesting a city-level variant or relocation rather than a different person. Evidence strongly supports a single individual.",
+      "gold_rationale": "Name/DOB/SSN match. Georgetown is near Lexington.",
+      "decision_correct": true,
+      "latency_s": 6.514,
+      "error": null
+    },
+    {
+      "case_id": "GZ050",
+      "gold_decision": "SAME",
+      "predicted_decision": "SAME",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "SSN last4 exact match: both records share last4 = 3210 (score 1.000)",
+        "DOB exact match: score 1.000 (specific dates redacted but fully consistent)",
+        "Address similarity 0.870: both in WA state, city partially redacted in Record B but overlap is high",
+        "Name similarity 0.825: 'JOSHUA' vs 'JOSH' is a clear nickname/abbreviation variant, consistent with same person",
+        "Composite score 0.924 \u2014 well above SAME threshold"
+      ],
+      "predicted_rationale": "SSN last4 and DOB match exactly. Address similarity of 0.870 indicates same geographic area within WA. Name similarity of 0.825 is fully explained by the common nickname abbreviation JOSHUA\u2192JOSH. All hard identifiers align with no conflicting signals. Records represent the same individual across pharmacy and claims sources.",
+      "gold_rationale": "Joshua/Josh nickname. DOB/SSN match. Spokane Valley is adjacent suburb.",
+      "decision_correct": true,
+      "latency_s": 5.564,
+      "error": null
+    },
+    {
+      "case_id": "LC001",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but names are redacted and common-name collision cannot be ruled out",
+        "SSN last4 differ completely: Record A = 7842, Record B = 3156 (score 0.000)",
+        "DOB match score is 0.000 \u2014 birth dates do not overlap",
+        "Address similarity is 0.000 \u2014 different cities and states (Record B is FL; Record A city/state differs entirely)",
+        "Composite score is only 0.250, driven solely by name match"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers conflict: SSN last4 differ (7842 vs 3156), DOB scores 0.000, and address similarity is 0.000 across different states. This is a classic common-name collision. No confirming identifier supports a SAME determination. Records represent distinct individuals.",
+      "gold_rationale": "Same name only. DOB, SSN, and address all completely different. Different people.",
+      "decision_correct": true,
+      "latency_s": 5.889,
+      "error": null
+    },
+    {
+      "case_id": "LC002",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but 'JENNIFER SMITH' is a common name, making collision likely",
+        "SSN last4 differ: Record A = 6734, Record B = 9201 \u2014 no overlap",
+        "DOB mismatch: Record A = [DATE_2], Record B = [DATE_1] \u2014 score 0.000 indicates different birth dates",
+        "Address similarity = 0.000 \u2014 different city/state combinations ([GPE_2] vs [GPE_1])",
+        "Composite score = 0.250 \u2014 driven entirely by name match; all hard identifiers conflict",
+        "Source systems differ: enrollment_2023 vs claims_2024 \u2014 no corroborating link"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers conflict: SSN last4 (6734 vs 9201), DOB ([DATE_2] vs [DATE_1]), and address (0.000 similarity). This is a classic common-name collision \u2014 two distinct individuals named JENNIFER SMITH. The composite score of 0.250 reflects name-only overlap with no supporting evidence. Recommend DISTINCT.",
+      "gold_rationale": "Same common name. All other identifying fields differ. Two different people.",
+      "decision_correct": true,
+      "latency_s": 6.317,
+      "error": null
+    },
+    {
+      "case_id": "LC003",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 (exact match), but names are redacted \u2014 common-name collision cannot be ruled out",
+        "SSN last4 differ completely: Record A = 4521, Record B = 8103",
+        "DOB/hard identifier match score ([ORG_2]) = 0.000 \u2014 no overlap",
+        "Hard identifier match score ([ORG_1]) = 0.000 \u2014 no overlap",
+        "Address similarity = 0.000 \u2014 different cities/states (Record A: [GPE_2]/[PERSON_2]; Record B: [GPE_1]/CO)",
+        "Composite score = 0.250 \u2014 well below any SAME or ESCALATE threshold",
+        "Sources differ: pharmacy_2023 vs. enrollment_2024 \u2014 no corroborating context"
+      ],
+      "predicted_rationale": "All hard identifiers conflict: SSN last4 (4521 vs. 8103), DOB score 0.000, and address score 0.000. Despite an exact name match, every confirmatory signal is absent. Redacted fields prevent further confirmation, but the numeric evidence is unambiguous \u2014 this is a common-name collision involving two distinct individuals.",
+      "gold_rationale": "Common name match only. DOB 13 years apart. Different SSN and city/state.",
+      "decision_correct": true,
+      "latency_s": 6.261,
+      "error": null
+    },
+    {
+      "case_id": "LC004",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match, but 'Maria Garcia' is a very common name, making collision likely",
+        "SSN last4 differ completely: Record A = 5467, Record B = 2389 (score 0.000)",
+        "DOB mismatch: [DATE_2] vs [DATE_1] (score 0.000) \u2014 different birth dates",
+        "Address similarity 0.200 \u2014 different cities and states ([GPE_2], WA vs Portland, OR)",
+        "Composite score 0.300 \u2014 well below any SAME or ESCALATE threshold",
+        "Different source systems ([GPE_1] vs pharmacy_2024) with no corroborating overlap"
+      ],
+      "predicted_rationale": "Despite an identical name, all hard identifiers conflict: SSN last4 are completely different, DOBs do not match, and the records originate from different cities and states with only 0.200 address overlap. 'Maria Garcia' is a high-frequency name, making a common-name collision the most likely explanation. No ambiguity warrants escalation \u2014 these are distinct individuals.",
+      "gold_rationale": "Very common name. DOB 12 years apart. Different SSN. Different state.",
+      "decision_correct": true,
+      "latency_s": 6.605,
+      "error": null
+    },
+    {
+      "case_id": "LC005",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match, but common-name collision is likely given all other identifiers conflict",
+        "SSN last4: Record A = 7156, Record B = 1456 \u2014 these differ completely (score 0.000)",
+        "DOB match score: 0.000 \u2014 birth dates do not overlap",
+        "Address similarity: 0.000 \u2014 different city/state combinations, no geographic overlap",
+        "Composite score: 0.250 \u2014 driven entirely by name match; all hard identifiers fail",
+        "Source systems differ: Record A from [ORG_4], Record B from claims_2024 \u2014 no corroborating context"
+      ],
+      "predicted_rationale": "Despite an exact name match (1.000), all hard identifiers \u2014 SSN last4 (7156 vs 1456), DOB, and address \u2014 show zero overlap. Per decision rules, this pattern is a common-name collision: two different individuals sharing the same name. The composite score of 0.250 reflects the name-only signal. No basis to link these records.",
+      "gold_rationale": "Common name. 26-year DOB gap. Different SSN, different state. Clearly different people.",
+      "decision_correct": true,
+      "latency_s": 6.231,
+      "error": null
+    },
+    {
+      "case_id": "LC006",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but likely a common-name collision",
+        "SSN last4 differ completely: Record A = 6890, Record B = 3478",
+        "DOB mismatch: Record A = [DATE_2], Record B = [DATE_1] \u2014 different birth dates",
+        "Address similarity = 0.000 \u2014 different cities/states ([GPE_2] vs [GPE_1])",
+        "Source context differs: Record A from pharmacy_2022, Record B from enrollment_2024",
+        "Composite score = 0.250 \u2014 well below any same-person threshold"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers conflict: SSN last4 (6890 vs 3478), DOB, and address all show zero overlap. This is a classic common-name collision \u2014 two different individuals sharing the same name. The composite score of 0.250 further confirms no meaningful linkage. Recommend DISTINCT with high confidence.",
+      "gold_rationale": "Same name only. 9-year DOB gap. All identifiers differ.",
+      "decision_correct": true,
+      "latency_s": 5.26,
+      "error": null
+    },
+    {
+      "case_id": "LC007",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match, but 'PATRICIA MOORE' is a common name, making collision likely",
+        "SSN last4: Record A is 9012, Record B is 7823 \u2014 completely different, score 0.000",
+        "DOB: Records show different dates ([DATE_2] vs [DATE_1]) \u2014 score 0.000, indicating different birth dates",
+        "Address similarity 0.000 \u2014 different cities/states with no geographic overlap",
+        "Composite score 0.250 \u2014 driven entirely by name match; all hard identifiers fail"
+      ],
+      "predicted_rationale": "Despite an identical name, all hard identifiers conflict: SSN last4 digits differ (9012 vs 7823), DOB scores 0.000, and address similarity is 0.000. 'PATRICIA MOORE' is a common name. This pattern \u2014 name-only match with zero overlap on every hard identifier \u2014 is a classic common-name collision. These are two distinct individuals.",
+      "gold_rationale": "Same name. 13-year DOB gap. Different SSN and state.",
+      "decision_correct": true,
+      "latency_s": 6.078,
+      "error": null
+    },
+    {
+      "case_id": "LC008",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but redacted names prevent verification of uniqueness; common-name collision cannot be ruled out",
+        "SSN last4 differ: Record A = 2145, Record B = 4290 \u2014 clear hard identifier mismatch",
+        "DOB/date field match score: 0.000 \u2014 birth dates do not overlap",
+        "Address similarity: 0.000 \u2014 records are in different cities/states ([GPE_2] vs [GPE_1])",
+        "Composite score: 0.250 \u2014 well below any SAME or ESCALATE threshold",
+        "Source context differs: Record A is enrollment_2023, Record B is claims_2024"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers conflict: SSN last4 (2145 vs 4290), DOB (0.000), and address (0.000) show zero overlap. Composite score of 0.250 confirms weak overall similarity. This is a common-name collision \u2014 two distinct individuals sharing an identical (redacted) name across different source systems.",
+      "gold_rationale": "Same name. 13-year DOB gap. All identifiers differ.",
+      "decision_correct": true,
+      "latency_s": 6.467,
+      "error": null
+    },
+    {
+      "case_id": "LC009",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity: 1.000 \u2014 exact match, but 'THOMAS WHITE' is a common name, making collision likely",
+        "SSN last4 differ completely: Record A has 8567, Record B has 5634 \u2014 no overlap",
+        "DOB mismatch: Record A has [DATE_2], Record B has [DATE_1] \u2014 score 0.000 indicates different birth dates",
+        "Address similarity: 0.000 \u2014 Record A is [GPE_2]/[PERSON_1], Record B is [GPE_1]/TN, different locations",
+        "Composite score: 0.250 \u2014 driven entirely by name match; all hard identifiers fail",
+        "Source systems differ: pharmacy_2023 vs enrollment_2024 \u2014 no corroborating cross-system signal"
+      ],
+      "predicted_rationale": "All hard identifiers \u2014 SSN last4, DOB, and address \u2014 show zero overlap. The exact name match on 'THOMAS WHITE' is a classic common-name collision. No supporting evidence from any other field confirms these are the same person. Recommend DISTINCT with high confidence.",
+      "gold_rationale": "Same name. 13-year DOB gap. Different SSN, city, state.",
+      "decision_correct": true,
+      "latency_s": 6.712,
+      "error": null
+    },
+    {
+      "case_id": "LC010",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match, but 'RICHARD TAYLOR' is a common name making collision likely",
+        "SSN last4 mismatch: Record A = 4290, Record B = 1456 \u2014 completely different",
+        "DOB match score 0.000 \u2014 birth dates do not match",
+        "Address similarity 0.000 \u2014 different cities/states with no geographic overlap",
+        "Composite score 0.250 \u2014 driven entirely by name match; all hard identifiers fail"
+      ],
+      "predicted_rationale": "Despite identical names, all hard identifiers conflict: SSN last4 digits differ (4290 vs 1456), DOB scores 0.000, and address similarity is 0.000. 'RICHARD TAYLOR' is a common name, making a collision highly plausible. No hard identifier supports a same-person conclusion. Recommend DISTINCT.",
+      "gold_rationale": "Same name only. 16-year DOB gap. No matching identifiers.",
+      "decision_correct": true,
+      "latency_s": 4.848,
+      "error": null
+    },
+    {
+      "case_id": "LC011",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but name is redacted and likely a common name (Susan), making collision plausible",
+        "SSN last4 differ: Record A ends in 7823, Record B ends in 2145 \u2014 no overlap",
+        "DOB match score is 0.000 \u2014 birth dates do not match (specific dates redacted but scores confirm mismatch)",
+        "Address similarity is 0.000 \u2014 different cities/states (Record A: [GPE_2], OH; Record B: [GPE_1], [ORG_3])",
+        "Composite score is 0.250 \u2014 well below any SAME or ESCALATE threshold",
+        "Sources differ: pharmacy_2023 vs claims_2024 \u2014 no corroborating system overlap"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers conflict: SSN last4 (7823 vs 2145), DOB (score 0.000), and address (score 0.000). This is a classic common-name collision \u2014 two different individuals named Susan sharing no identifying details. No signals support a SAME or ESCALATE decision.",
+      "gold_rationale": "Same name. 19-year DOB gap. All other fields differ.",
+      "decision_correct": true,
+      "latency_s": 6.884,
+      "error": null
+    },
+    {
+      "case_id": "LC012",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but 'Margaret Harris' is a common name, making collision likely",
+        "SSN last4 differ completely: Record A = 6178, Record B = 7156 \u2014 no overlap",
+        "DOB match score is 0.000 \u2014 different birth dates ([DATE_2] vs [DATE_1])",
+        "Address similarity is 0.000 \u2014 different cities and different states (IN vs GA)",
+        "Composite score is 0.250 \u2014 driven entirely by name match; all hard identifiers conflict",
+        "Sources differ (enrollment_2023 vs pharmacy_2024) with no corroborating identifiers"
+      ],
+      "predicted_rationale": "Despite an exact name match, every hard identifier conflicts: SSN last4 (6178 vs 7156), DOB (0.000), and address (IN vs GA, 0.000). This is a classic common-name collision \u2014 two different individuals named Margaret Harris. No evidence supports linkage.",
+      "gold_rationale": "Same name. 15-year DOB gap. Different SSN, city, state.",
+      "decision_correct": true,
+      "latency_s": 5.512,
+      "error": null
+    },
+    {
+      "case_id": "LC013",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but consistent with a common-name collision",
+        "SSN last4 differ: Record A = 3901, Record B = 5234 \u2014 no overlap",
+        "DOB/hard identifier match score: 0.000 \u2014 dates do not align",
+        "Address similarity: 0.000 \u2014 different city/state combinations (FL vs. unresolved location)",
+        "Composite score: 0.250 \u2014 well below any SAME or ESCALATE threshold",
+        "Source systems differ: Record A from [ORG_3], Record B tagged with enrollment_2024 context"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers conflict: SSN last4 differ (3901 vs. 5234), DOB scores 0.000, and address similarity is 0.000. The composite score of 0.250 reflects name-only overlap. This is a common-name collision \u2014 two distinct individuals sharing the same redacted name.",
+      "gold_rationale": "Same name. 15-year age gap. Completely different identifiers.",
+      "decision_correct": true,
+      "latency_s": 5.591,
+      "error": null
+    },
+    {
+      "case_id": "LC014",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match, but 'SARAH THOMPSON' is a common name, making collision likely",
+        "SSN last4 differ: Record A ends in 8945, Record B ends in 7412 \u2014 no overlap",
+        "DOB mismatch: Record A has [DATE_2], Record B has [DATE_1] \u2014 score 0.000 indicates different birth dates",
+        "Address similarity 0.000 \u2014 different city/state combinations ([GPE_2] vs [GPE_1], KY)",
+        "Composite score 0.250 \u2014 consistent with name-only match pattern"
+      ],
+      "predicted_rationale": "All hard identifiers conflict: SSN last4 (8945 vs 7412), DOB (0.000), and address (0.000) show zero overlap. The exact name match on a common name like SARAH THOMPSON is a textbook common-name collision. Different individuals sharing the same name across different source systems (pharmacy_2023 vs claims_2024).",
+      "gold_rationale": "Same name. 9-year DOB gap. All other fields differ.",
+      "decision_correct": true,
+      "latency_s": 5.833,
+      "error": null
+    },
+    {
+      "case_id": "LC015",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.93,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match, but 'DANIEL GARCIA' is a common name, making collision likely",
+        "SSN last4: Record A ends in 2067, Record B ends in 4589 \u2014 completely different, score 0.000",
+        "DOB: Records reference different dates ([DATE_2] vs [DATE_1]) \u2014 DOB match score 0.000",
+        "Address similarity 0.000 \u2014 Record A in Memphis, TN; Record B in [GPE_2], [GPE_1] \u2014 no geographic overlap",
+        "Composite score 0.250 \u2014 driven entirely by name match; all hard identifiers fail"
+      ],
+      "predicted_rationale": "All hard identifiers conflict: SSN last4, DOB, and address each score 0.000. The exact name match on 'DANIEL GARCIA' \u2014 a high-frequency name \u2014 is a classic common-name collision. No single confirming identifier supports a same-person conclusion. These are two distinct individuals.",
+      "gold_rationale": "Common name. 7-year DOB gap. Different SSN, city, state.",
+      "decision_correct": true,
+      "latency_s": 6.503,
+      "error": null
+    },
+    {
+      "case_id": "LC016",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but likely a common-name collision",
+        "SSN last4: Record A is 6723, Record B is 5801 \u2014 completely different, score 0.000",
+        "DOB: Records show different dates with score 0.000 \u2014 no birth date overlap",
+        "Address similarity: 0.000 \u2014 different cities/states with no geographic overlap",
+        "Composite score: 0.250 \u2014 driven entirely by name match with no corroborating identifier support"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers \u2014 SSN last4, DOB, and address \u2014 show zero overlap. SSN last4 values (6723 vs. 5801) are entirely different. This is a classic common-name collision where two distinct individuals share the same name. No corroborating evidence supports a merge.",
+      "gold_rationale": "Same name. 17-year DOB gap. Completely different person.",
+      "decision_correct": true,
+      "latency_s": 5.142,
+      "error": null
+    },
+    {
+      "case_id": "LC017",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but names are redacted and likely a common-name collision",
+        "SSN last4 differ: Record A = 3345, Record B = 2456 \u2014 no overlap",
+        "DOB/date field match score: 0.000 \u2014 different birth dates indicated",
+        "Address similarity: 0.000 \u2014 different cities/states (Albuquerque vs. redacted GPE_1)",
+        "Composite score: 0.250 \u2014 driven entirely by name match with no corroborating identifier support"
+      ],
+      "predicted_rationale": "Despite an exact name match (1.000), all hard identifiers conflict: SSN last4 differ (3345 vs. 2456), DOB scores 0.000, and address similarity is 0.000. This is a classic common-name collision. No single corroborating identifier supports a merge. Records represent distinct individuals.",
+      "gold_rationale": "Same name. 9-year DOB gap. No matching identifiers.",
+      "decision_correct": true,
+      "latency_s": 5.2,
+      "error": null
+    },
+    {
+      "case_id": "LC018",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but names are redacted; common-name collision cannot be ruled out",
+        "SSN last4 differ: Record A = 9178, Record B = 1578 \u2014 no overlap",
+        "ORG_2 match score: 0.000 \u2014 identifier mismatch",
+        "ORG_1 match score: 0.000 \u2014 identifier mismatch",
+        "Address similarity: 0.000 \u2014 different cities/states (GPE_2 vs GPE_1)",
+        "Composite score: 0.250 \u2014 driven entirely by name match; all hard identifiers conflict",
+        "Source contexts differ: enrollment_2023 vs pharmacy_2024"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers (SSN last4, ORG fields, address) show zero overlap. SSN last4 9178 vs 1578 are clearly distinct. Address similarity is 0.000 across different geographies. The composite score of 0.250 reflects a name-only match. Per decision rules, this pattern indicates a common-name collision \u2014 two different individuals sharing the same name.",
+      "gold_rationale": "Same name. 11-year DOB gap. All identifiers differ.",
+      "decision_correct": true,
+      "latency_s": 5.598,
+      "error": null
+    },
+    {
+      "case_id": "LC019",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.92,
+      "predicted_evidence": [
+        "Name similarity is 1.000 \u2014 exact match, but 'AMANDA ROBINSON' is a common name, making collision likely",
+        "SSN last4 differ: Record A ends in 7412, Record B ends in 5234 \u2014 no overlap",
+        "DOB mismatch: Record A has [DATE_2], Record B has [DATE_1] \u2014 score 0.000 indicates different birth dates",
+        "Address similarity is 0.000 \u2014 Record A is in [GPE_1], KY; Record B city/state is unresolvable but shows no overlap",
+        "Composite score of 0.250 is driven entirely by name match; all hard identifiers fail"
+      ],
+      "predicted_rationale": "Despite an identical name, all hard identifiers conflict: SSN last4 (7412 vs 5234), DOB (0.000), and address (0.000) show zero overlap. This is a classic common-name collision \u2014 two different individuals named AMANDA ROBINSON. The composite score of 0.250 reflects name-only similarity with no corroborating evidence.",
+      "gold_rationale": "Same name. 17-year gap. Completely different identifiers.",
+      "decision_correct": true,
+      "latency_s": 6.565,
+      "error": null
+    },
+    {
+      "case_id": "LC020",
+      "gold_decision": "DISTINCT",
+      "predicted_decision": "DISTINCT",
+      "predicted_confidence": 0.91,
+      "predicted_evidence": [
+        "Name similarity 1.000 \u2014 exact match, but 'WALKER' is a common surname; first name tokens also match, raising common-name collision risk",
+        "SSN last4 differ: Record A = 4712, Record B = 5123 \u2014 no overlap",
+        "DOB mismatch: Record A = [DATE_2], Record B = [DATE_1] \u2014 score 0.000 indicates different birth dates",
+        "Address similarity 0.000 \u2014 Record A is Portland, OR; Record B city/state is redacted ([GPE_1], [PERSON_1]) but scores zero overlap with Portland, OR",
+        "Composite score 0.250 \u2014 driven entirely by name match; all hard identifiers fail to corroborate"
+      ],
+      "predicted_rationale": "Despite an exact name match, all hard identifiers conflict: SSN last4 differ (4712 vs 5123), DOB scores 0.000 indicating different birth dates, and address similarity is 0.000. This is a classic common-name collision. No confirming evidence supports the same-person hypothesis. Recommend DISTINCT with high confidence.",
+      "gold_rationale": "Same name. 12-year DOB gap. No matching identifiers. Different people.",
+      "decision_correct": true,
+      "latency_s": 5.767,
+      "error": null
+    }
+  ]
+}

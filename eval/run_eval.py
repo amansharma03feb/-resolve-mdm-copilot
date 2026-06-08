@@ -200,7 +200,7 @@ def main():
     for i, case in enumerate(cases, 1):
         print(f"  [{i:3d}/{len(cases)}] {case['case_id']} — {case['gold_decision']}", end=" ... ", flush=True)
         result = evaluate_case(case)
-        status = "✓" if result["decision_correct"] else "✗"
+        status = "OK" if result["decision_correct"] else "FAIL"
         print(f"{status} predicted={result['predicted_decision']} (conf={result['predicted_confidence']:.2f}, {result['latency_s']:.1f}s)")
         results.append(result)
 
@@ -236,6 +236,22 @@ def main():
 
     # Save to Supabase
     save_to_db(metrics, run_id)
+
+    # Compare to baseline if it exists
+    baseline_path = RESULTS_DIR / "baseline.json"
+    if baseline_path.exists():
+        baseline = json.load(open(baseline_path))
+        bm = baseline["metrics"]
+        print("\n" + "=" * 60)
+        print("DELTA vs BASELINE")
+        print("=" * 60)
+        delta_agree = metrics["decision_agreement"] - bm["decision_agreement"]
+        print(f"  Decision Agreement:  {bm['decision_agreement']:.1%} → {metrics['decision_agreement']:.1%}  ({delta_agree:+.1%})")
+        for tier in ("SAME", "DISTINCT", "ESCALATE"):
+            old = bm.get("tier_accuracy", {}).get(tier, 0)
+            new = metrics.get("tier_accuracy", {}).get(tier, 0)
+            print(f"  {tier:12s}:        {old:.1%} → {new:.1%}  ({new - old:+.1%})")
+        print(f"  Errors:              {bm['errors']} → {metrics['errors']}")
 
     print("\nDone.")
     return metrics
