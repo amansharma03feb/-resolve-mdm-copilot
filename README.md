@@ -12,7 +12,17 @@ An open-source AI copilot that helps operations teams review, explain, and audit
 
 **Demo dataset:** Synthea synthetic healthcare records (realistic complexity: multiple identifiers, slight variations, ambiguous matches — the kinds of patterns ops teams face in finance, government services, insurance, and any regulated industry).
 
-**Status:** Core features complete. AI rationale, Ops Q&A, Anomaly Watcher, and evaluation harness all live. PRD v0.7.
+**Status:** v1.0 shipped. AI rationale, Ops Q&A, Anomaly Watcher, LLM-as-judge eval, and 3 ADRs all live.
+
+> **[View Eval Results](eval/results/)** | **[Architecture Decision Records](docs/adr/)** | **[PRD](docs/PRD.md)**
+
+### Eval Highlights (Round 1)
+| Metric | Baseline | After Tuning | Target |
+|---|---|---|---|
+| Decision Agreement | 88.0% | **93.0%** | >= 85% |
+| DISTINCT Accuracy | 60.0% | **100.0%** | — |
+| Auto-Resolve Precision | 100% | **100%** | — |
+| Hallucination Rate | ~5% | **~3%** | < 5% |
 
 ---
 
@@ -146,6 +156,35 @@ graph TB
 ```
 
 </details>
+
+---
+
+## Evaluation & Quality
+
+Three-layer eval framework ensures AI outputs are correct and grounded:
+
+1. **Golden Set (100 cases)** — automated decision agreement, per-tier accuracy, confidence calibration
+2. **Ops Q&A Golden Set (20 questions)** — context precision, citation validity, confidence
+3. **LLM-as-Judge** — GPT-4o scores Claude's rationale on correctness, evidence grounding, and clarity
+
+Run evals locally:
+```bash
+python eval/run_eval.py          # Rationale chain
+python eval/run_ops_qa_eval.py   # Ops Q&A chain
+python eval/run_llm_judge.py     # Cross-model judge
+```
+
+Results are saved to `eval/results/` and displayed in the Eval Results tab of the UI.
+
+---
+
+## Architecture Decision Records
+
+| ADR | Topic |
+|---|---|
+| [ADR-003](docs/adr/ADR-003-eval-methodology.md) | Eval methodology — golden set, metrics, quality bars |
+| [ADR-004](docs/adr/ADR-004-known-limitations.md) | Known limitations — failure modes and mitigations |
+| [ADR-005](docs/adr/ADR-005-pii-handling.md) | PII handling — redaction, audit log, threat model |
 
 ---
 

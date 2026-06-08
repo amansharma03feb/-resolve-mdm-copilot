@@ -97,6 +97,26 @@ st.markdown(
         margin-top: 20px;
         opacity: 0.5;
     }
+
+    /* Eval badge */
+    .eval-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    .eval-met { background: rgba(40,167,69,0.15); color: #28a745; }
+    .eval-notmet { background: rgba(220,53,69,0.15); color: #dc3545; }
+
+    /* Friendly empty state */
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        opacity: 0.5;
+    }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 8px; }
     </style>
     """,
     unsafe_allow_html=True,
@@ -246,7 +266,7 @@ try:
             unsafe_allow_html=True,
         )
 except Exception as e:
-    st.error(f"DB error: {e}")
+    st.warning(f"Could not load dashboard stats. Check your DATABASE_URL in .env.\n\n`{type(e).__name__}: {e}`")
 
 st.markdown("")
 
@@ -260,12 +280,13 @@ with f3:
     per_page = st.selectbox("Per page", [10, 25, 50], index=0)
 
 # ── Tabs ────────────────────────────────────────────────────
-tab_review, tab_auto, tab_separate, tab_qa, tab_anomaly = st.tabs([
+tab_review, tab_auto, tab_separate, tab_qa, tab_anomaly, tab_eval = st.tabs([
     f"{TIER_ICONS['STEWARD_REVIEW']} Pending Review",
     f"{TIER_ICONS['AUTO_MERGE']} Auto Resolved",
     f"{TIER_ICONS['SEPARATE']} Separated",
     "💬 Ops Q&A",
     "📊 Anomaly Watcher",
+    "🧪 Eval Results",
 ])
 
 
@@ -657,6 +678,86 @@ with tab_anomaly:
 
     except Exception as e:
         st.error(f"Anomaly watcher error: {e}")
+
+# ── Eval Results Tab ────────────────────────────────────────
+with tab_eval:
+    st.caption("Evaluation metrics from the latest rationale and Ops Q&A eval runs. These numbers reflect real AI performance on a 100-case golden set.")
+
+    eval_dir = os.path.join(os.path.dirname(__file__), "..", "eval", "results")
+
+    try:
+        # Find latest rationale run
+        import glob as _glob
+        rationale_runs = sorted(_glob.glob(os.path.join(eval_dir, "run_*.json")), reverse=True)
+        ops_runs = sorted(_glob.glob(os.path.join(eval_dir, "ops_qa_run_*.json")), reverse=True)
+        judge_runs = sorted(_glob.glob(os.path.join(eval_dir, "judge_run_*.json")), reverse=True)
+
+        if rationale_runs:
+            with open(rationale_runs[0]) as f:
+                latest_rationale = json.load(f)
+            m = latest_rationale["metrics"]
+
+            st.markdown("### Rationale Chain")
+            e1, e2, e3, e4 = st.columns(4)
+            agreement = m["decision_agreement"]
+            badge_cls = "eval-met" if agreement >= 0.85 else "eval-notmet"
+            badge_text = "TARGET MET" if agreement >= 0.85 else "BELOW TARGET"
+            e1.markdown(f'**Decision Agreement**<br><span class="stat-value">{agreement:.1%}</span><br>'
+                        f'<span class="eval-badge {badge_cls}">{badge_text}</span>', unsafe_allow_html=True)
+            e2.metric("Auto-Resolve Precision", f"{m.get('auto_resolve_precision', 0):.0%}" if m.get('auto_resolve_precision') else "N/A")
+            e3.metric("Avg Confidence (correct)", f"{m['avg_confidence_correct']:.3f}")
+            e4.metric("Avg Latency", f"{m['avg_latency_s']:.1f}s")
+
+            st.markdown("**Per-Tier Accuracy**")
+            tier_data = m.get("tier_accuracy", {})
+            tc1, tc2, tc3 = st.columns(3)
+            tc1.metric("SAME", f"{tier_data.get('SAME', 0):.1%}")
+            tc2.metric("DISTINCT", f"{tier_data.get('DISTINCT', 0):.1%}")
+            tc3.metric("ESCALATE", f"{tier_data.get('ESCALATE', 0):.1%}")
+
+            # Baseline comparison
+            baseline_path = os.path.join(eval_dir, "baseline.json")
+            if os.path.exists(baseline_path):
+                with open(baseline_path) as f:
+                    baseline = json.load(f)
+                bm = baseline["metrics"]
+                delta = agreement - bm["decision_agreement"]
+                st.markdown(f"**vs Baseline:** {bm['decision_agreement']:.1%} → {agreement:.1%} "
+                            f"({'**+' if delta >= 0 else '**'}{delta:.1%}**)")
+        else:
+            st.markdown('<div class="empty-state"><div class="icon">🧪</div>'
+                        'No rationale eval runs yet.<br>Run <code>python eval/run_eval.py</code></div>',
+                        unsafe_allow_html=True)
+
+        if ops_runs:
+            st.markdown("---")
+            st.markdown("### Ops Q&A Chain")
+            with open(ops_runs[0]) as f:
+                latest_ops = json.load(f)
+            om = latest_ops["metrics"]
+
+            o1, o2, o3, o4 = st.columns(4)
+            o1.metric("Avg Confidence", f"{om['avg_confidence']:.3f}")
+            cp = om.get("context_precision")
+            o2.metric("Context Precision", f"{cp:.0%}" if cp else "N/A")
+            o3.metric("Avg Citations", f"{om['avg_citations_per_answer']:.1f}")
+            o4.metric("Errors", f"{om['errors']}")
+
+        if judge_runs:
+            st.markdown("---")
+            st.markdown("### LLM-as-Judge Scores")
+            with open(judge_runs[0]) as f:
+                latest_judge = json.load(f)
+            jm = latest_judge["metrics"]
+
+            j1, j2, j3, j4 = st.columns(4)
+            j1.metric("Correctness", f"{jm['avg_correctness']:.2f}/5")
+            j2.metric("Evidence Grounding", f"{jm['avg_evidence_grounding']:.2f}/5")
+            j3.metric("Clarity", f"{jm['avg_clarity']:.2f}/5")
+            j4.metric("Pass Rate", f"{jm['pass_rate']:.0%}")
+
+    except Exception as e:
+        st.error(f"Could not load eval results: {e}")
 
 # ── Footer ──────────────────────────────────────────────────
 st.markdown(
